@@ -1,5 +1,6 @@
 export default function Contact(){
     return (
+        <body>
         <div className="bg-[#f5f6fa]">
             <div>
                 <h1 className="pt-12 pl-12 text-start text-4xl font-medium">Contact</h1>
@@ -68,5 +69,6 @@ export default function Contact(){
                 </div>
             </div>
         </div>
+        </body>
     )
 }
