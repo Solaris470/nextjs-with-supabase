@@ -48,12 +48,80 @@ export default async function AuthButton() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
-      <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+      <button
+        type="button"
+        className="flex text-sm items-center rounded-lg p-1 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+        aria-expanded="false"
+        data-dropdown-toggle="dropdown-user"
+      >
+        <img
+          className="w-8 h-8 rounded-full"
+          src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+          alt="user photo"
+        />
+        <span className="mx-2">Hey, {user.email}!</span>
+      </button>
+      <div
+        className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+        id="dropdown-user"
+      >
+        <div className="px-4 py-3" role="none">
+          <p className="text-sm text-gray-900 dark:text-white" role="none">
+            {/* {user.id} */}
+          </p>
+          <p
+            className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
+            role="none"
+          >
+           {user.email}
+          </p>
+        </div>
+        <ul className="py-1" role="none">
+          <li>
+            <a
+              href="/dashboard"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+              role="menuitem"
+            >
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a
+              href="/settings"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+              role="menuitem"
+            >
+              Settings
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+              role="menuitem"
+            >
+              Earnings
+            </a>
+          </li>
+          <hr />
+          <li>
+            <form action={signOutAction}>
+              <button type="submit" 
+                className="block px-4 py-2 text-sm w-full text-left text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                role="menuitem"
+              >
+                Sign out
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+      {/* <form action={signOutAction}>
+        <Button type="submit" className="bg-red-600 text-white hover:bg-black" variant={"outline"}>
           Sign out
         </Button>
-      </form>
+      </form> */}
     </div>
   ) : (
     <div className="flex gap-2">
