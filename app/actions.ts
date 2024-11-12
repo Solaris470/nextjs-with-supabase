@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const signUpAction = async (formData: FormData) => {
+  const fullname = formData.get("fullname")?.toString();
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const supabase = createClient();
@@ -15,7 +16,8 @@ export const signUpAction = async (formData: FormData) => {
     return { error: "Email and password are required" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  // Step 1: Sign up the user
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -23,17 +25,42 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
+  // Step 2: Check for sign-up errors
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
+    return { error: error.message };
   }
+
+  // Step 3: Capture and log the userId if sign-up is successful
+  const userId = data.user?.id; // This is the new user's ID
+  console.log("New user signed up with userId:", userId);
+
+  // Step 4: Optionally store the userId in your database
+  if (userId) {
+    const { error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          id: userId, // Use the captured userId here
+          full_name: fullname,
+          email: email,
+        },
+      ]);
+
+    if (insertError) {
+      console.error("Error adding user to database:", insertError.message);
+      return { error: "Error adding user to database" };
+    }
+  }
+
+  // Step 5: Return success message
+  return {
+    success: true,
+    message:
+      "Thanks for signing up! Please check your email for a verification link.",
+  };
 };
+
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import moment from "moment";
 
 export default function ToDoList() {
   const supabase = createClient();
@@ -21,10 +22,18 @@ export default function ToDoList() {
       completed_at,
       status
     `)
+    .order('id', { ascending: false });
   
     if (error) {
       console.error(error);
     } else {
+      to_do?.forEach(todo => {
+        // Check if due_date exists before applying moment
+        if (todo.due_date) {
+          todo.due_date = moment(todo.due_date).format('DD/MM/YYYY'); // Change format to the desired one
+        }
+      });
+      
       setTodo(to_do);
       console.log(to_do);
       
@@ -53,6 +62,7 @@ export default function ToDoList() {
   useEffect(() => {
     fetchToDo();
   }, []);
+  let i = 1;
 
   return (
     <>
@@ -62,7 +72,7 @@ export default function ToDoList() {
           type="search"
           id="location-search"
           className="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-          placeholder="Search by Task Name"
+          placeholder="ค้นหาจากชื่องาน"
           required
         />
         <button
@@ -84,29 +94,29 @@ export default function ToDoList() {
               d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
             />
           </svg>
-          <span className="sr-only">Search</span>
+          <span className="sr-only">ค้นหางาน</span>
         </button>
       </div>
 
       <table className="min-w-full bg-white border border-gray-200 mt-3">
         <thead>
           <tr>
-            <th className="px-4 py-2 border">ID</th>
-            <th className="px-4 py-2 border">Task Name</th>
-            <th className="px-4 py-2 border">Assigned By</th>
-            <th className="px-4 py-2 border">Assigned To</th>
-            <th className="px-4 py-2 border">Due Date</th>
-            <th className="px-4 py-2 border">Completed At</th>
-            <th className="px-4 py-2 border">Status</th>
+            <th className="px-4 py-2 border">ลำดับ</th>
+            <th className="px-4 py-2 border">ชื่องาน</th>
+            <th className="px-4 py-2 border">มอบหมายโดย</th>
+            <th className="px-4 py-2 border">ผู้รับผิดชอบ</th>
+            <th className="px-4 py-2 border">วันที่เริ่มต้น</th>
+            <th className="px-4 py-2 border">วันที่สิ้นสุด</th>
+            <th className="px-4 py-2 border">สถานะงาน</th>
           </tr>
         </thead>
         <tbody>
           {toDo.map((to_do: any) => (
             <tr key={to_do.id}>
-              <td className="px-4 py-2 border">{to_do.id}</td>
+              <td className="px-4 py-2 border">{i++}</td>
               <td className="px-4 py-2 border">{to_do.to_do_name}</td>
-              <td className="px-4 py-2 border">{to_do.assigned_by.full_name}</td>
-              <td className="px-4 py-2 border">{to_do.assigned_to.full_name}</td>
+              <td className="px-4 py-2 border">{to_do.assigned_by ? to_do.assigned_by.full_name : ""}</td>
+              <td className="px-4 py-2 border">{to_do.assigned_to ? to_do.assigned_to.full_name : ""}</td>
               <td className="px-4 py-2 border">{to_do.due_date}</td>
               <td className="px-4 py-2 border">{to_do.completed_at}</td>
               <td className="px-4 py-2 border">

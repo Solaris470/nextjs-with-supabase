@@ -1,4 +1,4 @@
-export default async function Layout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
