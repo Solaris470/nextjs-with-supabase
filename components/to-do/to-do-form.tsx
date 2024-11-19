@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-export default function ToDoFormClient({ users, categories, userId }) {
+export default function ToDoFormClient({ users, categories, userId }: { users: any; categories: any; userId: any }) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");
