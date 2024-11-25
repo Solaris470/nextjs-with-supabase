@@ -72,6 +72,13 @@ export const signInAction = async (formData: FormData) => {
     password,
   });
 
+  const fetchUserRole = async () => {
+    const { data: user } = await supabase.auth.getUser();
+    
+  }
+
+  // const role = await fetchUserRole(user.id);
+
   if (error) {
     return encodedRedirect("error", "/sign-in", error.message);
   }

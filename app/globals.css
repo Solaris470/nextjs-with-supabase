@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "roboto-fontface/css/roboto/roboto-fontface.css";
 
 @layer base {
   :root {

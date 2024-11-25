@@ -4,7 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-export default function ToDoFormClient({ users, categories, userId }: { users: any; categories: any; userId: any }) {
+export default function ToDoFormClient({
+  users,
+  categories,
+  userId,
+}: {
+  users: any;
+  categories: any;
+  userId: any;
+}) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");
@@ -17,7 +25,7 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
   const supabase = createClient();
 
   // Handle form submission
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     const { error } = await supabase.from("to_do").insert([
@@ -44,9 +52,12 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
   return (
     <form onSubmit={handleSubmit}>
-            {/* Category */}
-            <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+      {/* Category */}
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="category"
+        >
           Task Category
         </label>
         <select
@@ -57,7 +68,7 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
           required
         >
           <option value="">Select category</option>
-          {categories.map((category:any) => (
+          {categories.map((category: any) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>
@@ -67,7 +78,10 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
       {/* Task Name */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="task_name">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="task_name"
+        >
           Task Name
         </label>
         <input
@@ -83,7 +97,10 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
       {/* Description */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="description"
+        >
           Description
         </label>
         <textarea
@@ -98,7 +115,10 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
       {/* Status */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="status">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="status"
+        >
           Status
         </label>
         <select
@@ -115,7 +135,10 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
       {/* Priority */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priority">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="priority"
+        >
           Priority
         </label>
         <select
@@ -132,7 +155,10 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
 
       {/* Due Date */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="due_date">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="due_date"
+        >
           Due Date
         </label>
         <input
@@ -145,9 +171,12 @@ export default function ToDoFormClient({ users, categories, userId }: { users: a
         />
       </div>
 
-            {/* End Date */}
-            <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="due_date">
+      {/* End Date */}
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="due_date"
+        >
           End Date
         </label>
         <input

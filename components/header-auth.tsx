@@ -6,9 +6,11 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function AuthButton() {
-  const {
-    data: { user },
-  } = await createClient().auth.getUser();
+  const supabase = createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+
+  const { data: fetchUser } = await supabase.from('users').select('full_name ,role').eq('id' , user?.id).single();
 
   if (!hasEnvVars) {
     return (
@@ -59,7 +61,7 @@ export default async function AuthButton() {
           src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
           alt="user photo"
         />
-        <span className="mx-2">Hey, {user.email}!</span>
+        <span className="mx-2">Hey, {fetchUser?.full_name}!</span>
       </button>
       <div
         className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
