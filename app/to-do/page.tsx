@@ -1,4 +1,4 @@
-import ToDoList from "@/components/to-do/to-do-list";
+import ToDoList from "@/components/to-do/to-do-listcard";
 import Link from "next/link";
 import { Suspense } from "react";
 
