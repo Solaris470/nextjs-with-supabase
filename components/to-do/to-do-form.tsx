@@ -58,7 +58,7 @@ export default function ToDoFormClient({
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="category"
         >
-          Task Category
+          ประเภทงาน :
         </label>
         <select
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -82,7 +82,7 @@ export default function ToDoFormClient({
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="task_name"
         >
-          Task Name
+          ชื่องาน :
         </label>
         <input
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -101,7 +101,7 @@ export default function ToDoFormClient({
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="description"
         >
-          Description
+          คำอธิบายของงาน :
         </label>
         <textarea
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -113,81 +113,89 @@ export default function ToDoFormClient({
         ></textarea>
       </div>
 
-      {/* Status */}
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="status"
-        >
-          Status
-        </label>
-        <select
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          {/* <option value="Completed">Completed</option> */}
-        </select>
-      </div>
+      <div className="grid gap-4 mb-4 grid-cols-2">
+        {/* Status */}
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="status"
+          >
+            สถานะของงาน :
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            {/* <option value="Completed">Completed</option> */}
+          </select>
+        </div>
 
-      {/* Priority */}
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="priority"
-        >
-          Priority
-        </label>
-        <select
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-        >
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
+        {/* Priority */}
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="priority"
+          >
+            ลำดับความสำคัญของงาน :
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="priority"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
       </div>
+      
 
-      {/* Due Date */}
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="due_date"
-        >
-          Due Date
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="due_date"
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          required
-        />
-      </div>
+      <div className="grid gap-4 mb-4 grid-cols-2">
+          {/* Due Date */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="due_date"
+            >
+              วันที่เริ่มต้น :
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="due_date"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+          </div>
+      
+          {/* End Date */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="due_date"
+            >
+              วันที่สิ้นสุด :
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="end_date"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+          </div>
 
-      {/* End Date */}
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="due_date"
-        >
-          End Date
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="end_date"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
       </div>
+        
+      
 
       {/* Assigned To */}
       {/* <div className="mb-4">
@@ -216,7 +224,7 @@ export default function ToDoFormClient({
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
-          Submit Task
+          เพิ่มงาน
         </button>
       </div>
     </form>
