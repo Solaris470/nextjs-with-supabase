@@ -8,9 +8,9 @@
   import { faEdit } from "@fortawesome/free-solid-svg-icons";
   import { getUserRole } from "@/lib/roleUtil";
 
-  export default function ToDoList() {
+  export default function ToDoListTable() {
     const supabase = createClient();
-    const [role, setRole] = useState(null)
+    
     const [toDo, setTodo] = useState<any>([]); 
     const [searchToDo, setSearchToDo] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,16 +73,8 @@
       }
     };
 
-    async function fetchRole() {
-      const userRole = await getUserRole()
-      setRole(userRole)
-      
-    }
-console.log("eiei");
-
     useEffect(() => {
       fetchToDo();
-      fetchRole()
     }, []);
 
     let i = 1;
@@ -178,7 +170,7 @@ console.log("eiei");
           id="filter-tab"
           className="relative w-full px-3 flex items-stretch gap-x-4 py-2"
         >
-          {role == "employee" ? '' : (
+          {/* {role == "employee" ? '' : ( */}
           <Link href="/to-do/add">
             <button
               type="button"
@@ -187,7 +179,7 @@ console.log("eiei");
               เพิ่มงานใหม่
             </button>
           </Link>
-          )}
+          {/* )} */}
           <form className="w-full max-w-md">
             <div className="relative">
               <input

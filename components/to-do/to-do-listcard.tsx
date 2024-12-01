@@ -6,9 +6,11 @@ import moment from "moment";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { getUserRole } from "@/lib/roleUtil";
 
 export default function ToDoList() {
   const supabase = createClient();
+  const [role, setRole] = useState(null)
   const [toDo, setTodo] = useState<any>([]); 
   const [searchToDo, setSearchToDo] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +24,12 @@ export default function ToDoList() {
     end_date: "",
     description: "",
   });
+
+  async function fetchRole() {
+    const userRole = await getUserRole()
+    setRole(userRole)
+    
+  }
 
   const fetchToDo = async () => {
     let { data: to_do, error } = await supabase
@@ -73,6 +81,7 @@ export default function ToDoList() {
 
   useEffect(() => {
     fetchToDo();
+    fetchRole();
   }, []);
   let i = 1;
 
@@ -167,6 +176,7 @@ export default function ToDoList() {
         id="filter-tab"
         className="relative w-full px-3 flex items-stretch gap-x-4 py-2"
       >
+        {role == "employee" ? '' : (
         <Link href="/to-do/add">
           <button
             type="button"
@@ -175,7 +185,7 @@ export default function ToDoList() {
             เพิ่มงานใหม่
           </button>
         </Link>
-
+        )}
         <form className="w-full max-w-md">
           <div className="relative">
             <input
@@ -208,6 +218,12 @@ export default function ToDoList() {
             </button>
           </div>
         </form>
+<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-width="2" d="M3 11h18M3 15h18M8 10.792V19m4-8.208V19m4-8.208V19M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
+</svg>
+<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+</svg>
       </div>
 
       {toDo.map((to_do: any) => 
@@ -328,6 +344,7 @@ export default function ToDoList() {
               </form>
               {/* Modal footer */}
               <div className="flex items-center gap-2 justify-end p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+              {role == "employee" ? '' : (
                 <button
                 onClick={() => handleOpenEditModal(modalData)}
                   data-modal-hide="static-modal"
@@ -336,6 +353,7 @@ export default function ToDoList() {
                 >
                   <FontAwesomeIcon icon={faEdit} />
                 </button>
+              )}
                 {modalData.assigned_to == null ? (
                   <button
                     onClick={() => {
