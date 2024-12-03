@@ -46,7 +46,8 @@ export default function ToDoList() {
       status
     `
       )
-      .order("id", { ascending: false });
+      .order("id", { ascending: false })
+      .range(0, 9);
 
     if (error) {
       console.error(error);
@@ -174,7 +175,7 @@ export default function ToDoList() {
 
       <div
         id="filter-tab"
-        className="relative w-full px-3 flex items-center justify-between py-2"
+        className="bg-white rounded-lg relative w-full px-3 flex items-center justify-between py-2"
       >
         <div className="flex items-center gap-x-4">
           {role == "employee" ? (
@@ -298,8 +299,9 @@ export default function ToDoList() {
           ))}
         </div>
       ) : (
+        <div className="rounded-lg">
         <table className="w-full bg-white border border-gray-200 mt-3 ">
-          <thead className="text-md font-bold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <thead className="text-md font-bold  text-[#202224] uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th className="py-3 col-span-1">ลำดับ</th>
               <th className="col-span-3">ชื่องาน</th>
@@ -315,7 +317,7 @@ export default function ToDoList() {
               <tr
                 key={to_do.id}
                 onClick={() => handleOpenModal(to_do.id)} // เพิ่ม onClick
-                className="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" // เพิ่ม cursor pointer เพื่อให้ดูคลิกได้
+                className="cursor-pointer text-[#202224] bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" // เพิ่ม cursor pointer เพื่อให้ดูคลิกได้
               >
                 <td className="py-3.5 text-center">{i++}</td>
                 <td>{to_do.to_do_name}</td>
@@ -341,6 +343,7 @@ export default function ToDoList() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
       {isModalOpen && modalData && (
         <div

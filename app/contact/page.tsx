@@ -10,7 +10,7 @@ export default function Contact() {
   const fetchUserData = async () => {
     let { data: data, error } = await supabase
       .from("users")
-      .select("profile_image ,full_name,  email");
+      .select("profile_image ,full_name,  email,role");
 
     setUserData(data);
   };
@@ -90,7 +90,10 @@ export default function Contact() {
                   <p className="mb>-3 font-normal text-gray-700 dark:text-gray-400">
                     {dataContacts.email}
                   </p>
-                  <a
+                  <p className="mb>-3 font-normal text-gray-700 dark:text-gray-400">
+                    ตำแหน่ง : {dataContacts.role}
+                  </p>
+                  {/* <a
                     href="#"
                     className="inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                   >
@@ -110,7 +113,7 @@ export default function Contact() {
                         d="M1 5h12m0 0L9 1m4 4L9 9"
                       />
                     </svg>
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>

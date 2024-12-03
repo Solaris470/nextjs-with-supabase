@@ -35,8 +35,8 @@ export default function RootLayout({
       <body>
         < Header />
 
-        <div className="p-4 sm:ml-64">
-          <div className="mt-14">{children}</div>
+        <div className="p-4 sm:ml-64 bg-gray-100">
+          <div className="mt-14 ">{children}</div>
         </div>
       {/* <Footer /> */}
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
