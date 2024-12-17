@@ -1,4 +1,4 @@
-import ToDoForm from "@/components/to-do/to-do-form";
+import ToDoForm from "@/components/tasks/task-form";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function ToDoFormPage() {

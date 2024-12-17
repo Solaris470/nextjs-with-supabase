@@ -21,7 +21,7 @@ export default function ToDoList() {
   const [editData, setEditData] = useState({
     id: null,
     to_do_name: "",
-    due_date: "",
+    start_date: "",
     end_date: "",
     description: "",
   });
@@ -33,16 +33,16 @@ export default function ToDoList() {
 
   const fetchToDo = async () => {
     let { data: to_do, error } = await supabase
-      .from("to_do")
+      .from("tasks")
       .select(
         `
       id,
       to_do_name,
       assigned_by:to_do_assigned_by_fkey(id, full_name), 
       assigned_to:to_do_assigned_to_fkey(id, full_name), 
-      due_date,
+      start_date,
       end_date,
-      completed_at,
+      completed_date,
       status
     `
       )
@@ -53,8 +53,8 @@ export default function ToDoList() {
       console.error(error);
     } else {
       to_do?.forEach((todo) => {
-        if (todo.due_date) {
-          todo.due_date = moment(todo.due_date).format("DD MMM YYYY");
+        if (todo.start_date) {
+          todo.start_date = moment(todo.start_date).format("DD MMM YYYY");
           todo.end_date = moment(todo.end_date).format("DD MMM YYYY");
         }
       });
@@ -69,7 +69,7 @@ export default function ToDoList() {
 
   const search = async () => {
     let { data, error } = await supabase
-      .from("to_do")
+      .from("tasks")
       .select("*")
       .like("to_do_name", `%${searchToDo}%`);
 
@@ -89,7 +89,7 @@ export default function ToDoList() {
   const handleOpenModal = async (id: string) => {
     try {
       const data = await fetchDataById(id);
-      data.due_date = moment(data.due_date).format("DD/MMM/YYYY");
+      data.start_date = moment(data.start_date).format("DD/MMM/YYYY");
       data.end_date = moment(data.end_date).format("DD/MMM/YYYY");
       setModalData(data);
       setIsModalOpen(true);
@@ -109,7 +109,7 @@ export default function ToDoList() {
       setCurrentUser(user?.id);
 
       const { data, error } = await supabase
-        .from("to_do")
+        .from("tasks")
         .update({
           assigned_to: user?.id,
         })
@@ -134,7 +134,7 @@ export default function ToDoList() {
     setEditData({
       id: modalData.id,
       to_do_name: modalData.to_do_name,
-      due_date: moment(modalData.due_date).format("YYYY-MM-DD"),
+      start_date: moment(modalData.start_date).format("YYYY-MM-DD"),
       end_date: moment(modalData.end_date).format("YYYY-MM-DD"),
       description: modalData.description,
     });
@@ -151,11 +151,11 @@ export default function ToDoList() {
 
   const handleEditTask = async (e: any) => {
     e.preventDefault();
-    const { id, to_do_name, due_date, end_date, description } = editData;
+    const { id, to_do_name, start_date, end_date, description } = editData;
 
     const { error } = await supabase
-      .from("to_do")
-      .update({ to_do_name, due_date, end_date, description })
+      .from("tasks")
+      .update({ to_do_name, start_date, end_date, description })
       .eq("id", id);
 
     if (error) {
@@ -171,17 +171,12 @@ export default function ToDoList() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold p-3">Work List </h1>
-
-      <div
-        id="filter-tab"
-        className="bg-white rounded-lg relative w-full px-3 flex items-center justify-between py-2"
-      >
-        <div className="flex items-center gap-x-4">
-          {role == "employee" ? (
-            ""
-          ) : (
-            <div>
+      <div className="p-3 flex justify-between">
+        <h1 className="font-bold text-3xl">Work List</h1>
+        {role == "employee" ? (
+          ""
+        ) : (
+          <div className="">
             <Link href="/to-do/add">
               <button
                 type="button"
@@ -190,15 +185,21 @@ export default function ToDoList() {
                 เพิ่มงานใหม่
               </button>
             </Link>
-            </div>
-          )}
+          </div>
+        )}
+      </div>
+      <div
+        id="filter-tab"
+        className="bg-white rounded-lg relative w-full p-5 flex items-center justify-between mb-3"
+      >
+        <div className="flex items-center gap-4">
           <form className="w-full max-w-md">
             <div className="relative">
               <input
                 type="search"
                 id="location-search"
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-                placeholder="Search for city or address"
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                placeholder="ค้นหาด้วยชื่องาน"
                 required
               />
               <button
@@ -300,49 +301,53 @@ export default function ToDoList() {
         </div>
       ) : (
         <div className="rounded-lg">
-        <table className="w-full bg-white border border-gray-200 mt-3 ">
-          <thead className="text-md font-bold  text-[#202224] uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th className="py-3 col-span-1">ลำดับ</th>
-              <th className="col-span-3">ชื่องาน</th>
-              <th className="col-span-1">มอบหมายโดย</th>
-              <th className="col-span-3">ผู้รับผิดชอบ</th>
-              <th className="col-span-3">วันที่เริ่มต้น</th>
-              <th className="col-span-3">วันที่สิ้นสุด</th>
-              <th className="col-span-1">สถานะงาน</th>
-            </tr>
-          </thead>
-          <tbody className="font-light">
-            {toDo.map((to_do: any) => (
-              <tr
-                key={to_do.id}
-                onClick={() => handleOpenModal(to_do.id)} // เพิ่ม onClick
-                className="cursor-pointer text-[#202224] bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" // เพิ่ม cursor pointer เพื่อให้ดูคลิกได้
-              >
-                <td className="py-3.5 text-center">{i++}</td>
-                <td>{to_do.to_do_name}</td>
-                <td>{to_do.assigned_by ? to_do.assigned_by.full_name : ""}</td>
-                <td>{to_do.assigned_to ? to_do.assigned_to.full_name : ""}</td>
-                <td className="text-center">{to_do.due_date}</td>
-                <td className="text-center">{to_do.end_date}</td>
-                <td className="text-center">
-                  <span
-                    className={`${
-                      to_do.status === "Pending"
-                        ? "bg-indigo-100 text-indigo-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 inline-block"
-                        : to_do.status === "In Progress"
-                          ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400 inline-block"
-                          : "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
-                    }
-                    `}
-                  >
-                    {to_do.status}
-                  </span>
-                </td>
+          <table className="w-full bg-white border border-gray-200 mt-3 ">
+            <thead className="text-md font-bold  text-[#202224] uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th className="py-3 col-span-1">ลำดับ</th>
+                <th className="col-span-3">ชื่องาน</th>
+                <th className="col-span-1">มอบหมายโดย</th>
+                <th className="col-span-3">ผู้รับผิดชอบ</th>
+                <th className="col-span-3">วันที่เริ่มต้น</th>
+                <th className="col-span-3">วันที่สิ้นสุด</th>
+                <th className="col-span-1">สถานะงาน</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="font-light">
+              {toDo.map((to_do: any) => (
+                <tr
+                  key={to_do.id}
+                  onClick={() => handleOpenModal(to_do.id)} // เพิ่ม onClick
+                  className="cursor-pointer text-[#202224] bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" // เพิ่ม cursor pointer เพื่อให้ดูคลิกได้
+                >
+                  <td className="py-3.5 text-center">{i++}</td>
+                  <td>{to_do.to_do_name}</td>
+                  <td>
+                    {to_do.assigned_by ? to_do.assigned_by.full_name : ""}
+                  </td>
+                  <td>
+                    {to_do.assigned_to ? to_do.assigned_to.full_name : ""}
+                  </td>
+                  <td className="text-center">{to_do.start_date}</td>
+                  <td className="text-center">{to_do.end_date}</td>
+                  <td className="text-center">
+                    <span
+                      className={`${
+                        to_do.status === "Pending"
+                          ? "bg-indigo-100 text-indigo-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 inline-block"
+                          : to_do.status === "In Progress"
+                            ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400 inline-block"
+                            : "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
+                      }
+                    `}
+                    >
+                      {to_do.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
       {isModalOpen && modalData && (
@@ -388,16 +393,55 @@ export default function ToDoList() {
               </div>
               {/* Modal body */}
               <form className="p-4 md:p-5">
+                <div className="mb-3">
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    ชื่องาน :
+                  </label>
+                  <p>{modalData.to_do_name}</p>
+                </div>
                 <div className="grid gap-4 mb-4 grid-cols-2">
-                  <div className="col-span-2">
+                  <div className="col-span-2 sm:col-span-1">
                     <label
-                      htmlFor="name"
+                      htmlFor="price"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      ชื่องาน :
+                      สถานะงาน :
                     </label>
-                    <p>{modalData.to_do_name}</p>
+                    <p className={`
+                    ${
+                      modalData.status == "Pending"
+                        ? "bg-indigo-100 text-indigo-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 inline-block"
+                        : modalData.status == "In Progress"
+                          ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400 inline-block"
+                          : "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
+                    }`}>{modalData.status}</p>
                   </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label
+                      htmlFor="category"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      ความยากงาน :
+                    </label>
+                    <p
+                        className={`
+                  ${
+                    modalData.priority == "Low"
+                      ? "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
+                      : modalData.priority == "Medium"
+                        ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400 inline-block"
+                        : "bg-red-100 text-red-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-red-400 border border-red-400 inline-block"
+                  }
+                  `}
+                      >
+                        {modalData.priority}
+                      </p>
+                  </div>
+                </div>
+                <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2 sm:col-span-1">
                     <label
                       htmlFor="price"
@@ -405,7 +449,7 @@ export default function ToDoList() {
                     >
                       วันที่เริ่มต้น :
                     </label>
-                    <p>{modalData.due_date}</p>
+                    <p>{modalData.start_date}</p>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label
@@ -416,15 +460,15 @@ export default function ToDoList() {
                     </label>
                     <p>{modalData.end_date}</p>
                   </div>
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="description"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      รายละเอียดงาน :
-                    </label>
-                    <p>{modalData.description}</p>
-                  </div>
+                </div>
+                <div className="">
+                  <label
+                    htmlFor="description"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    รายละเอียดงาน :
+                  </label>
+                  <p>{modalData.description}</p>
                 </div>
               </form>
               {/* Modal footer */}
@@ -528,16 +572,16 @@ export default function ToDoList() {
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label
-                      htmlFor="due_date"
+                      htmlFor="start_date"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
                       วันที่เริ่มต้น :
                     </label>
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      name="due_date"
+                      name="start_date"
                       type="date"
-                      value={editData.due_date}
+                      value={editData.start_date}
                       onChange={handleEditChange}
                       required
                     />

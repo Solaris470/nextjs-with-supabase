@@ -18,7 +18,7 @@ export default function MyTaskList() {
     const userId = user?.id;
 
     let { data: to_do, error } = await supabase
-      .from("to_do")
+      .from("tasks")
       .select(
         `
         id,
@@ -28,9 +28,9 @@ export default function MyTaskList() {
       priority,
       assigned_by:to_do_assigned_by_fkey(id, full_name), 
       assigned_to:to_do_assigned_to_fkey(id, full_name), 
-      due_date,
+      start_date,
       end_date,
-      completed_at
+      completed_date
     `
       )
       .eq("assigned_to", userId)
@@ -40,9 +40,9 @@ export default function MyTaskList() {
       console.error(error.message);
     } else {
       to_do?.forEach((todo) => {
-        // Check if due_date exists before applying moment
-        if (todo.due_date) {
-          todo.due_date = moment(todo.due_date).format("DD/MM/YYYY"); // Change format to the desired one
+        // Check if start_date exists before applying moment
+        if (todo.start_date) {
+          todo.start_date = moment(todo.start_date).format("DD/MM/YYYY"); // Change format to the desired one
           todo.end_date = moment(todo.end_date).format("DD/MM/YYYY"); // Change format to the desired one
         }
       });
@@ -75,7 +75,7 @@ export default function MyTaskList() {
   const handleOpenModal = async (id: string) => {
     try {
       const data = await fetchDataById(id);
-      data.due_date = moment(data.due_date).format("DD/MM/YYYY");
+      data.start_date = moment(data.start_date).format("DD/MM/YYYY");
       data.end_date = moment(data.end_date).format("DD/MM/YYYY");
       setModalData(data);
       setIsModalOpen(true);
@@ -142,7 +142,7 @@ export default function MyTaskList() {
                   <div className="flex justify-between items-center">
                     <div>
                       <h5 className="font-bold text-black">วันที่เริ่มต้น</h5>
-                      <p>{to_do.due_date}</p>
+                      <p>{to_do.start_date}</p>
                     </div>
                     <div>
                       <h5 className="font-bold text-black">วันที่สิ้นสุด</h5>
