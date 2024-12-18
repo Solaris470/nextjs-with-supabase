@@ -1,50 +1,45 @@
-'use client'
+"use client";
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import dynamic from "next/dynamic";
+import { createClient } from "@/utils/supabase/client";
+import { useState, useEffect } from "react";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const LineChart: React.FC = () => {
-  const chartOptions = {
-    chart: {
-      type: 'line',
-      height: 350,
-      toolbar: {
-        show: false
-      }
+
+export default function LineChart(){
+  const [chartData, setChartData] = useState<any>(null);
+useEffect(() => {
+  setChartData({
+    options: {
+      chart: {
+        id: "basic-bar",
+      },
+      xaxis: {
+        categories: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.'] 
+      },
     },
-    title: {
-      text: 'งานที่เสร็จสิ้น',
-      align: 'left'
-    },
-    xaxis: {
-      categories: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.']
-    },
-    colors: ['#3B82F6'],
     series: [
       {
-        name: 'งานสำเร็จ',
+        name: "series-1",
         data: [30, 40, 35, 50, 49, 60]
-      }
+      },
     ],
-    stroke: {
-      curve: 'smooth'
-    },
-    markers: {
-      size: 5
-    }
-  };
+  });
+});
 
   return (
     <div className="w-full">
-      <Chart 
-        options={chartOptions} 
-        series={chartOptions.series} 
-        type="line" 
-        height={350} 
-      />
+      {chartData ? (
+        <Chart
+          options={chartData.options}
+          series={chartData.series}
+          type="line"
+          height={350}
+        />
+      ) : (
+        <p>Loading Chart...</p>
+      )}
     </div>
   );
-};
-
-export default LineChart;
+// };
+}

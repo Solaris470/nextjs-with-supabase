@@ -9,12 +9,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function PieChart() {
   const [chartData, setChartData] = useState<any>(null);
-  const [pendingCount, setPendingCount] = useState(0);
-  const [inProgressCount, setInProgressCount] = useState(0);
-  const [completedCount, setCompletedCount] = useState(0);
   const supabase = createClient();
-
-  
 
   useEffect(() => {
     const fetchTaskCounts = async () => {
@@ -24,73 +19,86 @@ export default function PieChart() {
           data: { user },
           error: authError,
         } = await supabase.auth.getUser();
-  
+
         if (authError) {
           console.error("Auth Error:", authError.message);
           return;
         }
-  
+
         if (!user) {
           console.error("No user found");
           return;
         }
-  
+
         const userId = user.id; // user id ปัจจุบัน
-  
+
         // Query เพื่อดึงจำนวนงานตามสถานะ
         const { count: pending, error: pendingError } = await supabase
           .from("tasks")
           .select("*", { count: "exact" })
           .eq("assigned_to", userId)
           .eq("status", "Pending");
-  
+
         const { count: inProgress, error: inProgressError } = await supabase
           .from("tasks")
           .select("*", { count: "exact" })
           .eq("assigned_to", userId)
           .eq("status", "In Progress");
-  
+
         const { count: completed, error: completedError } = await supabase
           .from("tasks")
           .select("*", { count: "exact" })
           .eq("assigned_to", userId)
           .eq("status", "Completed");
-  
+
         if (pendingError || inProgressError || completedError) {
           console.error("Error fetching task counts");
           return;
         }
-  console.log(pending);
-  console.log(inProgressCount,completedCount,pendingCount);
-  
+
         setChartData({
           options: {
-            labels: ["งานที่ได้รับมอบหมาย","งานที่กำลังทำอยู่", "งานที่เสร็จสิ้น" ],
-            colors:['#8280FF','#FEC53D', '#4AD991', ]
+            chart: {
+              animation: {
+                enabled: true,
+                speed: 800,
+                animateGradually: {
+                  enabled: true,
+                  delay: 150,
+                },
+                dynamicAnimation: {
+                  enabled: true,
+                  speed: 350,
+                },
+              },
+            },
+            labels: [
+              "งานที่ได้รับมอบหมาย",
+              "งานที่กำลังทำอยู่",
+              "งานที่เสร็จสิ้น",
+            ],
+            colors: ["#8280FF", "#FEC53D", "#4AD991"],
           },
-          series: [inProgress,completed  ,pending ],
+          series: [inProgress, completed, pending],
         });
       } catch (e) {
         console.error("Unexpected Error:", e);
       }
     };
     fetchTaskCounts();
-
   }, []);
 
   return (
-    
-      <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">
-        {chartData ? (
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="donut"
-          />
-        ) : (
-          <p>Loading Chart...</p>
-        )}
-      </div>
-    
+    <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">
+      {chartData ? (
+        <Chart
+          options={chartData.options}
+          series={chartData.series}
+          type="donut"
+        />
+      ) : (
+        <p>Loading Chart...</p>
+      )}
+    </div>
   );
 }
