@@ -20,11 +20,11 @@ export default function DashBoard() {
         </div>
 
         <div className=" p-2 w-full flex justify-center items-center bg-white rounded-lg">
-          <BarChart />
+          {/* <BarChart /> */}
         </div>
       </div>
       <div className="p-2 w-full flex justify-center items-center bg-white rounded-lg">
-          <LineChart />
+          {/* <LineChart /> */}
         </div>
     </main>
   );

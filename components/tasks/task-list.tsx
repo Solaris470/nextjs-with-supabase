@@ -7,6 +7,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { getUserRole } from "@/lib/roleUtil";
+import FilterBar from "./filterbar";
 
 export default function ToDoList() {
   const supabase = createClient();
@@ -17,7 +18,10 @@ export default function ToDoList() {
   const [modalData, setModalData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>([]);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"card" | "table">("card");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState<any>([]);
+  const [itemsPerPage] = useState(10);
+  const [viewMode, setViewMode] = useState("table");
   const [editData, setEditData] = useState({
     id: null,
     to_do_name: "",
@@ -31,8 +35,15 @@ export default function ToDoList() {
     setRole(userRole);
   }
 
-  const fetchToDo = async () => {
-    let { data: to_do, error } = await supabase
+  const fetchToDo = async (page: number, limit: number) => {
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    let {
+      data: to_do,
+      count,
+      error,
+    } = await supabase
       .from("tasks")
       .select(
         `
@@ -44,10 +55,11 @@ export default function ToDoList() {
       end_date,
       completed_date,
       status
-    `
+    `,
+        { count: "exact" }
       )
       .order("id", { ascending: false })
-      .range(0, 9);
+      .range(start, end);
 
     if (error) {
       console.error(error);
@@ -60,31 +72,23 @@ export default function ToDoList() {
       });
 
       setTodo(to_do);
+      setTotalItems(count);
     }
   };
 
-  const handleSearch = (e: any) => {
-    setSearchToDo(e.target.value);
-  };
-
-  const search = async () => {
-    let { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .like("to_do_name", `%${searchToDo}%`);
-
-    if (error) {
-      alert(error);
-    } else {
-      setTodo(data);
-    }
+  const handleSearch = (query: string) => {
+    console.log("Searching for:", query);
+    // เพิ่ม logic การค้นหา
   };
 
   useEffect(() => {
-    fetchToDo();
+    fetchToDo(currentPage, itemsPerPage);
     fetchRole();
-  }, []);
+  }, [currentPage]);
   let i = 1;
+  const handleNextPage = () => setCurrentPage((prev) => prev + 1);
+  const handlePreviousPage = () =>
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   const handleOpenModal = async (id: string) => {
     try {
@@ -123,7 +127,7 @@ export default function ToDoList() {
 
       alert("กดรับงานสำเร็จ");
       setIsModalOpen(false);
-      fetchToDo();
+      fetchToDo(currentPage, itemsPerPage);
     } catch (e) {
       console.error("Unexpected error:", e);
       alert("เกิดข้อผิดพลาดที่ไม่คาดคิด");
@@ -164,11 +168,13 @@ export default function ToDoList() {
     } else {
       setIsModalOpen(false);
       alert("Update ข้อมูลสำเร็จ");
-      fetchToDo();
+      fetchToDo(currentPage, itemsPerPage);
       setIsModalEditOpen(false);
     }
   };
 
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
   return (
     <>
       <div className="p-3 flex justify-between">
@@ -177,7 +183,7 @@ export default function ToDoList() {
           ""
         ) : (
           <div className="">
-            <Link href="/to-do/add">
+            <Link href="/task/add">
               <button
                 type="button"
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -188,81 +194,11 @@ export default function ToDoList() {
           </div>
         )}
       </div>
-      <div
-        id="filter-tab"
-        className="bg-white rounded-lg relative w-full p-5 flex items-center justify-between mb-3"
-      >
-        <div className="flex items-center gap-4">
-          <form className="w-full max-w-md">
-            <div className="relative">
-              <input
-                type="search"
-                id="location-search"
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-                placeholder="ค้นหาด้วยชื่องาน"
-                required
-              />
-              <button
-                type="submit"
-                className="absolute top-0 end-0 h-full p-2.5 text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                <svg
-                  className="w-4 h-4"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-                <span className="sr-only">Search</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <svg
-            onClick={() => setViewMode("card")}
-            className={`w-6 h-6 cursor-pointer ${viewMode === "card" ? "text-blue-500" : "text-gray-800"} dark:text-white`}
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="2"
-              d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"
-            />
-          </svg>
-          <svg
-            onClick={() => setViewMode("table")}
-            className={`w-6 h-6 cursor-pointer ${viewMode === "table" ? "text-blue-500" : "text-gray-800"} dark:text-white`}
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeWidth="2"
-              d="M3 11h18M3 15h18M8 10.792V19m4-8.208V19m4-8.208V19M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-            />
-          </svg>
-        </div>
-      </div>
+      <FilterBar 
+              onSearch={handleSearch}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+      />
       {viewMode === "card" ? (
         <div>
           {toDo.map((to_do: any) => (
@@ -314,13 +250,15 @@ export default function ToDoList() {
               </tr>
             </thead>
             <tbody className="font-light">
-              {toDo.map((to_do: any) => (
+              {toDo.map((to_do: any, index: number) => (
                 <tr
                   key={to_do.id}
                   onClick={() => handleOpenModal(to_do.id)} // เพิ่ม onClick
                   className="cursor-pointer text-[#202224] bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" // เพิ่ม cursor pointer เพื่อให้ดูคลิกได้
                 >
-                  <td className="py-3.5 text-center">{i++}</td>
+                  <td className="py-3.5 text-center">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
                   <td>{to_do.to_do_name}</td>
                   <td>
                     {to_do.assigned_by ? to_do.assigned_by.full_name : ""}
@@ -348,6 +286,28 @@ export default function ToDoList() {
               ))}
             </tbody>
           </table>
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-sm text-gray-600">
+              Showing {startItem}-{endItem} of {totalItems}
+            </span>
+            <div className="flex">
+              <button
+                onClick={handlePreviousPage}
+                className="px-3 py-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50"
+                disabled={currentPage === 1}
+              >
+                &lt;
+              </button>
+              <button
+                onClick={handleNextPage}
+                className="ml-2 px-3 py-1 bg-gray-200 text-gray-700 rounded"
+                disabled={currentPage === Math.ceil(totalItems / itemsPerPage)}
+              >
+                &gt;
+              </button>
+            </div>
+          </div>
         </div>
       )}
       {isModalOpen && modalData && (
@@ -410,14 +370,18 @@ export default function ToDoList() {
                     >
                       สถานะงาน :
                     </label>
-                    <p className={`
+                    <p
+                      className={`
                     ${
                       modalData.status == "Pending"
                         ? "bg-indigo-100 text-indigo-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 inline-block"
                         : modalData.status == "In Progress"
                           ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400 inline-block"
                           : "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
-                    }`}>{modalData.status}</p>
+                    }`}
+                    >
+                      {modalData.status}
+                    </p>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label
@@ -427,7 +391,7 @@ export default function ToDoList() {
                       ความยากงาน :
                     </label>
                     <p
-                        className={`
+                      className={`
                   ${
                     modalData.priority == "Low"
                       ? "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400 inline-block"
@@ -436,9 +400,9 @@ export default function ToDoList() {
                         : "bg-red-100 text-red-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-red-400 border border-red-400 inline-block"
                   }
                   `}
-                      >
-                        {modalData.priority}
-                      </p>
+                    >
+                      {modalData.priority}
+                    </p>
                   </div>
                 </div>
                 <div className="grid gap-4 mb-4 grid-cols-2">

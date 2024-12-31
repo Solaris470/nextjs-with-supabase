@@ -31,6 +31,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
           rel="stylesheet"
         />
+        <script src="https://kit.fontawesome.com/4383344860.js" crossOrigin="anonymous"></script>
       </head>
       <body>
         < Header />
@@ -39,6 +40,7 @@ export default function RootLayout({
           <div className="mt-14 ">{children}</div>
         </div>
       {/* <Footer /> */}
+      
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
       </body>
     </html>

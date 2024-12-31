@@ -28,13 +28,13 @@ export default function ToDoFormClient({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const { error } = await supabase.from("to_do").insert([
+    const { error } = await supabase.from("tasks").insert([
       {
         to_do_name: taskName,
         description: description,
         status: status,
         priority: priority,
-        due_date: dueDate,
+        start_date: dueDate,
         end_date: endDate,
         assigned_by: userId,
         category_id: category,
@@ -46,7 +46,7 @@ export default function ToDoFormClient({
       alert("Error saving task. Please try again.");
     } else {
       // Redirect to /to-do page on success
-      router.push("/to-do");
+      router.push("/task");
     }
   };
 
