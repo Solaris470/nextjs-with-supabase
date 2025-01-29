@@ -1,8 +1,21 @@
 "use client";
 
+import { useEffect } from 'react';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { cn } from "@/lib/utils";
+import { addDays, format } from "date-fns"
+import { DateRange } from "react-day-picker"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar"
+import React from "react";
 
 export default function ToDoFormClient({
   users,
@@ -12,7 +25,11 @@ export default function ToDoFormClient({
   users: any;
   categories: any;
   userId: any;
-}) {
+},
+{
+  className,
+}: React.HTMLAttributes<HTMLDivElement>
+) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");
@@ -23,6 +40,18 @@ export default function ToDoFormClient({
   const [category, setCategory] = useState("");
   const router = useRouter();
   const supabase = createClient();
+  const [date, setDate] = React.useState<DateRange | undefined>({
+      from: new Date(),
+      to: new Date(addDays(new Date(), 1)),
+    });
+
+  // ฟังก์ชันสำหรับตั้งค่าเวลาให้เป็นเที่ยงคืน
+  const setToMidnight = (date: Date | undefined) => {
+    if (!date) return date;
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    return newDate;
+  };
 
   // Handle form submission
   const handleSubmit = async (e: any) => {
@@ -34,8 +63,8 @@ export default function ToDoFormClient({
         description: description,
         status: status,
         priority: priority,
-        start_date: dueDate,
-        end_date: endDate,
+        start_date: setToMidnight(date?.from),
+        end_date: setToMidnight(addDays(date?.to, 1)), // เพิ่ม 1 วันให้กับวันที่สิ้นสุด
         assigned_by: userId,
         category_id: category,
       },
@@ -156,43 +185,46 @@ export default function ToDoFormClient({
       </div>
       
 
-      <div className="grid gap-4 mb-4 grid-cols-2">
-          {/* Due Date */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="due_date"
+      <div className={cn("grid gap-2", className)}>
+        <div>
+          <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn(
+                "w-[300px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
             >
-              วันที่เริ่มต้น :
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="due_date"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
+            <CalendarIcon />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} -{" "}
+                  {format(date.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
             />
-          </div>
-      
-          {/* End Date */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="due_date"
-            >
-              วันที่สิ้นสุด :
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="end_date"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
-            />
-          </div>
-
+          </PopoverContent>
+        </Popover>
       </div>
         
       

@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { cn } from "@/lib/utils";
+import { addDays, format } from "date-fns"
+import { DateRange } from "react-day-picker"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar"
+import React from "react";
 
 interface Category {
   id: string;
@@ -17,7 +29,11 @@ export default function ToDoFormContactClient({
   users: any;
   categories: Category[];
   userId: string;
-}) {
+},
+{
+  className,
+}: React.HTMLAttributes<HTMLDivElement>
+) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");
@@ -32,7 +48,11 @@ export default function ToDoFormContactClient({
   const supabase = createClient();
   const searchParams = useSearchParams();
   const cardId = searchParams.get("id") ?? ""; // กำหนดค่าเริ่มต้นหากเป็น null
-
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date(),
+  })
+  
   useEffect(() => {
     async function fetchUserData(userId: string, setUser: (user: any) => void) {
       if (!userId) return;
@@ -60,8 +80,8 @@ export default function ToDoFormContactClient({
         description: description,
         status: status,
         priority: priority,
-        start_date: dueDate,
-        end_date: endDate,
+        start_date: date?.from,
+        end_date: date?.to,
         assigned_by: userId,
         assigned_to: cardId || null, // ป้องกันปัญหา `null` type error
         category_id: category,
@@ -178,35 +198,48 @@ export default function ToDoFormContactClient({
         </div>
       </div>
       
-      <div className="grid gap-4 grid-cols-2">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="dueDate">
-            วันที่เริ่มต้น :
-          </label>
-          <input
-            id="dueDate"
-            type="date"
-            className="w-full p-2 border border-gray-300 rounded-md"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
+      <div className={cn("grid gap-2", className)}>
+        <div>
+          <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="endDate">
-            วันที่สิ้นสุด :
-          </label>
-          <input
-            id="endDate"
-            type="date"
-            className="w-full p-2 border border-gray-300 rounded-md"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn(
+                "w-[300px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+            <CalendarIcon />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} -{" "}
+                  {format(date.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       
-
       <div className="flex items-center justify-center">
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
           เพิ่มงาน
