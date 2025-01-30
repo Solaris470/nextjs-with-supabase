@@ -32,8 +32,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"
-import Link from 'next/link'
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -62,22 +62,32 @@ export function DataTable<TData, TValue>({
   return (
     <section className="">
       <h1 className="text-3xl font-bold py-5">รายการงานทั้งหมด</h1>
-      <div id="FilterBar" className="bg-white p-5 rounded-md mb-3 flex items-center justify-between">
-      <Input
+      <div
+        id="FilterBar"
+        className="bg-white p-5 rounded-md mb-3 flex items-center justify-between"
+      >
+        <Input
           placeholder="ค้นหาจากชื่องาน..."
-          value={(table.getColumn("to_do_name")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("to_do_name")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("to_do_name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Link href="/task/add" className="bg-blue-700 text-white px-3 py-2 rounded-lg font-light">เพิ่มงานใหม่</Link>
+        <Link
+          href="/task/add"
+          className="bg-blue-700 text-white px-3 py-2 rounded-lg font-light"
+        >
+          เพิ่มงานใหม่
+        </Link>
       </div>
       <div className="rounded-lg border bg-white">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} >
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -127,7 +137,7 @@ export function DataTable<TData, TValue>({
         <div className="flex-1 text-sm text-muted-foreground">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-light">Rows per page</p>
-            <Select 
+            <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
                 table.setPageSize(Number(value));
