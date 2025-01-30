@@ -16,18 +16,24 @@ import {
 export type Task = {
   id: string;
   to_do_name: string;
-  assigned_by: { id: number; full_name: string };
-  assigned_to: { id: number; full_name: string };
-  start_date: string;
-  end_date: string;
+  assigned_by: { id: String; full_name: string };
+  assigned_to: { id: String; full_name: string };
+  start_date: Date;
+  end_date: Date;
   status: string;
 };
+
+
+interface AssignedBy {
+  id: string;
+  full_name: string;
+}
 
 export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
     header: (props) => {
-      return <div>ลำดับ</div>;
+      return <div className="">ลำดับ</div>;
     },
     cell: ({ row }) => {
       return <div className="ps-3">{row.index + 1}</div>;
@@ -38,11 +44,12 @@ export const columns: ColumnDef<Task>[] = [
     header: "ชื่องาน",
   },
   {
+    id: "assigned_by",
     accessorKey: "assigned_by",
-    header: "มอบหมายโดย",
-    cell: ({ row }) => {
-      return row.original.assigned_by.full_name;
-    },
+    filterFn: (row, id, filterValue: AssignedBy) => {
+      const rowValue = row.getValue(id) as AssignedBy;
+      return rowValue?.id === filterValue?.id;
+    }
   },
   {
     accessorKey: "assigned_to",
@@ -53,14 +60,14 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "start_date",
-    header: () => <div className="text-left">วันที่เริ่มต้น</div>,
+    header: () => <div className="text-left">วันที่เริ่มงาน</div>,
     cell: ({ row }) => {
       return moment(row.original.start_date).format("DD MMM YYYY");
     },
   },
   {
     accessorKey: "end_date",
-    header: () => <div className="text-left">วันที่เริ่มต้น</div>,
+    header: () => <div className="text-left">วันที่สิ้นสุดงาน</div>,
     cell: ({ row }) => {
       return moment(row.original.end_date).format("DD MMM YYYY");
     },

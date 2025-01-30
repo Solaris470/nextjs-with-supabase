@@ -6,6 +6,7 @@ import ToDoFormClient from "@/components/tasks/task-form";
 async function getData(): Promise<Task[]> {
   const supabase = createClient();
 
+  // Fetch tasks
   const { data, error } = await supabase
     .from("tasks")
     .select(
@@ -34,28 +35,30 @@ async function getData(): Promise<Task[]> {
 export default async function ToDo() {
   const data = await getData();
 
-   const supabase = createClient();
-  
-    const {
-      data: { user },
-    } = await createClient().auth.getUser();
-    
-      // Fetch categories
-      const { data: categories } = await supabase.from("category").select("id, name");
-  
-      // Fetch users
-      const { data: users } = await supabase.from("users").select("id, full_name");
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await createClient().auth.getUser();
+
+  // Fetch categories
+  const { data: categories } = await supabase
+    .from("category")
+    .select("id, name");
+
+  // Fetch users
+  const { data: users } = await supabase.from("users").select("id, full_name");
 
   return (
     <>
       <div className="container mx-auto h-screen">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold py-5">รายการงานทั้งหมด</h1>
           {/* <!-- Modal toggle --> */}
           <button
             data-modal-target="crud-modal"
             data-modal-toggle="crud-modal"
-            className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="bg-blue-700 text-white px-3 py-2 rounded-lg font-light"
             type="button"
           >
             เพิ่มงานใหม่
@@ -93,9 +96,9 @@ export default async function ToDo() {
                 >
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                   />
                 </svg>
@@ -105,10 +108,10 @@ export default async function ToDo() {
             {/* <!-- Modal body --> */}
             <div className="p-4 md:p-7">
               <ToDoFormClient
-               users={users || []}
-               categories={categories || []}
-               userId={user?.id || ""}
-               />
+                users={users || []}
+                categories={categories || []}
+                userId={user?.id || ""}
+              />
             </div>
           </div>
         </div>

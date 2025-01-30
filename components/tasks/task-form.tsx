@@ -1,49 +1,46 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { cn } from "@/lib/utils";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
+import { addDays, format } from "date-fns"
+import { DateRange } from "react-day-picker"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar"
 import React from "react";
-import { data } from "autoprefixer";
 
-export default function ToDoFormClient(
-  {
-    users,
-    categories,
-    userId,
-  }: {
-    users: any;
-    categories: any;
-    userId: any;
-  },
-  { className }: React.HTMLAttributes<HTMLDivElement>
+export default function ToDoFormClient({
+  users,
+  categories,
+  userId,
+}: {
+  users: any;
+  categories: any;
+  userId: any;
+},
+{
+  className,
+}: React.HTMLAttributes<HTMLDivElement>
 ) {
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");
   const [priority, setPriority] = useState("Low");
-  const [dueDate, setDueDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [assignedTo, setAssignedTo] = useState("");
   const [category, setCategory] = useState("");
   const router = useRouter();
   const supabase = createClient();
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(addDays(new Date(), 1)),
-  });
+      from: new Date(),
+      to: new Date(addDays(new Date(), 1)),
+    });
 
   // ฟังก์ชันสำหรับตั้งค่าเวลาให้เป็นเที่ยงคืน
   const setToMidnight = (date: Date | undefined) => {
@@ -57,7 +54,7 @@ export default function ToDoFormClient(
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const { data, error } = await supabase.from("tasks").insert([
+    const { error } = await supabase.from("tasks").insert([
       {
         to_do_name: taskName,
         description: description,
@@ -70,7 +67,6 @@ export default function ToDoFormClient(
       },
     ]);
 
-    console.log(data);
     if (error) {
       console.error("Error saving task:", error.message);
       alert("Error saving task. Please try again.");
@@ -143,7 +139,7 @@ export default function ToDoFormClient(
         ></textarea>
       </div>
 
-      <div className="grid gap-4 mb-2 grid-cols-2">
+      <div className="grid gap-4 mb-4 grid-cols-2">
         {/* Status */}
         <div className="mb-4">
           <label
@@ -184,8 +180,9 @@ export default function ToDoFormClient(
           </select>
         </div>
       </div>
+      
 
-      <div className={cn("mb-4 grid gap-2", className)}>
+      <div className={cn("grid gap-2", className)}>
         <div>
           <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
         </div>
@@ -199,20 +196,20 @@ export default function ToDoFormClient(
                 !date && "text-muted-foreground"
               )}
             >
-              <CalendarIcon />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  format(date.from, "LLL dd, y")
-                )
+            <CalendarIcon />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} -{" "}
+                  {format(date.to, "LLL dd, y")}
+                </>
               ) : (
-                <span>Pick a date</span>
-              )}
-            </Button>
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
@@ -226,6 +223,8 @@ export default function ToDoFormClient(
           </PopoverContent>
         </Popover>
       </div>
+        
+      
 
       {/* Assigned To */}
       {/* <div className="mb-4">
