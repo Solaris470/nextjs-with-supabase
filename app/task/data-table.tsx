@@ -49,6 +49,11 @@ interface AssignedBy {
   full_name: string;
 }
 
+interface AssignedTo {
+  id: string;
+  full_name: string;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -96,7 +101,7 @@ export function DataTable<TData, TValue>({
             <SelectTrigger className="max-w-sm">
               <SelectValue placeholder="เลือกสถานะ..." />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white cursor-pointer">
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="In Progress">In Progress</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
@@ -121,8 +126,33 @@ export function DataTable<TData, TValue>({
                 .map((str) => JSON.parse(str))
                 .filter(Boolean)
                 .map((assignedBy: AssignedBy) => (
-                  <SelectItem key={assignedBy.id} value={assignedBy.full_name}>
+                  <SelectItem className="bg-white cursor-pointer" key={assignedBy.id} value={assignedBy.full_name}>
                     {assignedBy.full_name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={
+              (table.getColumn("assigned_to")?.getFilterValue() as string) ?? ""
+            }
+            onValueChange={(value) => {
+              const selectedPerson = data.find((item) => item.assigned_to.full_name === value )?.assigned_to;
+              table.getColumn("assigned_to")?.setFilterValue(selectedPerson);
+            }}
+          >
+            <SelectTrigger className="max-w-sm">
+              <SelectValue placeholder="เลือกผู้รับผิดชอบ..." />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from(
+                new Set(data.map((item) => JSON.stringify(item.assigned_to)))
+              )
+                .map((str) => JSON.parse(str))
+                .filter(Boolean)
+                .map((assignedTo: AssignedTo) => (
+                  <SelectItem className="bg-white cursor-pointer" key={assignedTo.id} value={assignedTo.full_name}>
+                    {assignedTo.full_name}
                   </SelectItem>
                 ))}
             </SelectContent>
@@ -169,6 +199,7 @@ export function DataTable<TData, TValue>({
               </PopoverContent>
             </Popover>
             </div> */}
+            
           <Button
             variant="outline"
             onClick={() => {

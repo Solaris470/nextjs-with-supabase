@@ -46,10 +46,14 @@ export const columns: ColumnDef<Task>[] = [
   {
     id: "assigned_by",
     accessorKey: "assigned_by",
+    header: "ผู้มอบหมายงาน",
     filterFn: (row, id, filterValue: AssignedBy) => {
       const rowValue = row.getValue(id) as AssignedBy;
-      return rowValue?.id === filterValue?.id;
-    }
+      return rowValue?.full_name === filterValue?.full_name;
+    },
+    cell: ({ row }) => {
+      return row.original.assigned_by?.full_name;
+    },
   },
   {
     accessorKey: "assigned_to",
