@@ -79,7 +79,7 @@ export default function PieChart() {
   }, []);
 
   return (
-    <div className="w-full rounded-lg p-4 bg-white dark:bg-gray-800 md:p-6 gap-y-5">
+    <div className="w-full rounded-lg p-4 bg-white dark:bg-gray-800 md:p-6 gap-y-5  ">
       <h3 className="text-lg font-medium text-gray-900 dark:text-white">ความคืบหน้าของงาน</h3>
       <div className="">
         {chartData && (

@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({
               (table.getColumn("assigned_to")?.getFilterValue() as string) ?? ""
             }
             onValueChange={(value) => {
-              const selectedPerson = data.find((item) => item.assigned_to.full_name === value )?.assigned_to;
+              const selectedPerson = data.find((item) => item.assigned_to?.full_name === value )?.assigned_to;
               table.getColumn("assigned_to")?.setFilterValue(selectedPerson);
             }}
           >

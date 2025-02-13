@@ -2,6 +2,8 @@ import DeployButton from "@/components/deploy-button";
 import Footer from "@/components/layout/footer";
 import Header from "@/components/layout/header";
 import { Kanit } from "next/font/google";
+import { createClient } from '@/utils/supabase/client';
+import ClientLayout from "@/components/ClientLayout";
 
 const kanit = Kanit({
   weight: "400",
@@ -19,11 +21,14 @@ export const metadata = {
   description: "This wepsite for learned and developed ",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html className={kanit.className}>
       <head>
@@ -37,7 +42,9 @@ export default function RootLayout({
         < Header />
 
         <div className="p-4 sm:ml-64 bg-gray-100">
-          <div className="mt-14 ">{children}</div>
+        <ClientLayout userId={user?.id || ''}>
+            <div className="mt-14">{children}</div>
+          </ClientLayout>
         </div>
       {/* <Footer /> */}
       

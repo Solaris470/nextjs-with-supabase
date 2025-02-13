@@ -29,6 +29,11 @@ interface AssignedBy {
   full_name: string;
 }
 
+interface AssignedTo {
+  id: string;
+  full_name: string;
+}
+
 export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
@@ -58,6 +63,10 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "assigned_to",
     header: "ผู้รับผิดชอบ",
+    filterFn: (row, id, filterValue: AssignedTo) => {
+      const rowValue = row.getValue(id) as AssignedTo;
+      return rowValue?.full_name === filterValue?.full_name;
+    },
     cell: ({ row }) => {
       return row.original.assigned_to?.full_name;
     },

@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { Card, Button, Label, TextInput, Avatar } from 'flowbite-react';
 import { createClient } from '@/utils/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserRole } from '@/context/userRoleContext';
 
 export default function ProfilePage() {
     const supabase = createClient();
+    const { role, loading: roleLoading } = useUserRole();
     const [user, setUser] = useState<User | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState<User>({
@@ -90,6 +92,13 @@ export default function ProfilePage() {
             </div>
         );
     }
+    if (roleLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-center">Loading role...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -111,7 +120,6 @@ export default function ProfilePage() {
                             disabled={uploading}
                         />
                     </div>
-
                     <form className="space-y-4">
                         <div>
                             <Label htmlFor="full_name">Full Name</Label>
@@ -122,10 +130,14 @@ export default function ProfilePage() {
                             <Label htmlFor="email">Email</Label>
                             <TextInput id="email" type="email" name="email" value={formData.email} onChange={handleInputChange} disabled={!isEditing} required />
                         </div>
-
+                        
                         <div>
                             <Label htmlFor="role">Role</Label>
-                            <TextInput id="role" name="role" value={formData.role} onChange={handleInputChange} disabled={!isEditing} required />
+                            {formData.role !== 'admin' ? (
+                                <p>{formData.role}</p>
+                            ) : (
+                                <TextInput id="role" name="role" value={formData.role} onChange={handleInputChange} disabled={!isEditing} required />
+                            )}
                         </div>
 
                         {isEditing && <Button type="submit" color="success">Save Changes</Button>}

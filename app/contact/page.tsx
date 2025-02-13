@@ -11,7 +11,8 @@ export default function Contact() {
   const fetchUserData = async () => {
     let { data: data, error } = await supabase
       .from("users")
-      .select("id, profile_image ,full_name,  email,role");
+      .select("id, profile_image ,full_name, email, role")
+      .neq("role", "admin");
 
     setUserData(data);
   };
@@ -19,51 +20,6 @@ export default function Contact() {
   useEffect(() => {
     fetchUserData();
   }, []);
-
-  const dataContact = [
-    {
-      id: 1,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-    {
-      id: 2,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-    {
-      id: 3,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-    {
-      id: 4,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-    {
-      id: 5,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-    {
-      id: 6,
-      contact_name: "title.satsuke",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-      role: "Tester",
-      email: "title.satsuke@test.com",
-    },
-  ];
 
   return (
       <div className="bg-[#f5f6fa]">
@@ -77,7 +33,7 @@ export default function Contact() {
                 <a href="#">
                   <img
                     className="rounded-t-lg object-cover h-72 w-full"
-                    src={dataContacts.profile_image}
+                    src={dataContacts.profile_image || "/images/default_profile.jpg"}
                     alt=""
                   />
                 </a>

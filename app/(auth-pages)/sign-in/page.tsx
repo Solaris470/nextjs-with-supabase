@@ -20,12 +20,12 @@ export default function Login({ searchParams }: { searchParams: Message }) {
         <Input name="email" placeholder="you@example.com" required />
         <div className="flex justify-between items-center">
           <Label htmlFor="password">Password</Label>
-          <Link
+          {/* <Link
             className="text-xs text-foreground underline"
             href="/forgot-password"
           >
             Forgot Password?
-          </Link>
+          </Link> */}
         </div>
         <Input
           type="password"
