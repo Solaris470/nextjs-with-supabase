@@ -1,6 +1,6 @@
 import DeployButton from "@/components/deploy-button";
 import Footer from "@/components/layout/footer";
-import Header from "@/components/layout/header";
+
 import { Kanit } from "next/font/google";
 import { createClient } from '@/utils/supabase/client';
 import ClientLayout from "@/components/ClientLayout";
@@ -39,13 +39,12 @@ export default async function RootLayout({
         <script src="https://kit.fontawesome.com/4383344860.js" crossOrigin="anonymous"></script>
       </head>
       <body>
-        < Header />
 
-        <div className="p-4 sm:ml-64 bg-gray-100">
+        
         <ClientLayout userId={user?.id || ''}>
-            <div className="mt-14">{children}</div>
+            {children}
           </ClientLayout>
-        </div>
+        
       {/* <Footer /> */}
       
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
