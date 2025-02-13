@@ -1,4 +1,6 @@
-import { createClient } from "@/utils/supabase/client";
+'use server'
+
+import { createClient } from "@/utils/supabase/server";
 import { Task, columns } from "./columns";
 import { DataTable } from "./data-table";
 import ToDoFormClient from "@/components/tasks/task-form";
@@ -39,15 +41,12 @@ export default async function ToDo() {
 
   const {
     data: { user },
-  } = await createClient().auth.getUser();
-
+  } = await supabase.auth.getUser();
+  
   // Fetch categories
   const { data: categories } = await supabase
     .from("category")
     .select("id, name");
-
-  // Fetch users
-  const { data: users } = await supabase.from("users").select("id, full_name");
 
   return (
     <>
@@ -108,7 +107,6 @@ export default async function ToDo() {
             {/* <!-- Modal body --> */}
             <div className="p-4 md:p-7">
               <ToDoFormClient
-                users={users || []}
                 categories={categories || []}
                 userId={user?.id || ""}
               />

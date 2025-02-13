@@ -18,11 +18,9 @@ import { Calendar } from "@/components/ui/calendar"
 import React from "react";
 
 export default function ToDoFormClient({
-  users,
   categories,
   userId,
 }: {
-  users: any;
   categories: any;
   userId: any;
 },
@@ -30,6 +28,7 @@ export default function ToDoFormClient({
   className,
 }: React.HTMLAttributes<HTMLDivElement>
 ) {
+  
   const [taskName, setTaskName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Pending");

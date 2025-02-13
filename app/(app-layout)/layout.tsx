@@ -1,7 +1,13 @@
 import React from "react";
 import Header from "@/components/layout/header";
 
-const AppLayout: React.FC = ({ children }) => {
+import { ReactNode } from "react";
+
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <div>
       <header>

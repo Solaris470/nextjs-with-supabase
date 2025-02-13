@@ -7,6 +7,8 @@ export default async function ToDoFormPage() {
   const {
     data: { user },
   } = await createClient().auth.getUser();
+
+  console.log("User:", user);
   
     // Fetch categories
     const { data: categories } = await supabase.from("category").select("id, name");
