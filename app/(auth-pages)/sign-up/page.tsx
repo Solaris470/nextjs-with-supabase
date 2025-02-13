@@ -17,20 +17,17 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
 
   return (
     <>
-      <form className="border p-5 rounded-lg flex flex-col min-w-64 max-w-64 mx-auto">
-        <h1 className="text-2xl font-medium">Sign up</h1>
-        <p className="text-sm text text-foreground">
-          Already have an account?{" "}
-          <Link className="text-primary font-medium underline" href="/sign-in">
-            Sign in
-          </Link>
+      <form className="border p-8 rounded-lg flex flex-col min-w-64 max-w-64 mx-auto bg-white shadow-xl">
+        <h1 className="text-2xl mb-4 font-medium mx-auto">Create an Account</h1>
+        <p className="text-sm text-gray-500 mx-auto">
+          Create a account to continue
         </p>
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="fullname">Full Name</Label>
+          <Label className="text-gray-600" htmlFor="fullname">Full Name</Label>
           <Input name="fullname" placeholder="Enter your name" required />
-          <Label htmlFor="email">Email</Label>
+          <Label className="text-gray-600" htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
-          <Label htmlFor="password">Password</Label>
+          <Label className="text-gray-600" htmlFor="password">Password</Label>
           <Input
             type="password"
             name="password"
@@ -38,9 +35,15 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
             minLength={6}
             required
           />
-          <SubmitButton formAction={signUpAction} pendingText="Signing up...">
+          <SubmitButton className="bg-blue-500 text-white" formAction={signUpAction} pendingText="Signing up...">
             Sign up
           </SubmitButton>
+          <p className="text-sm text-gray-500 mx-auto">
+            Already have an account?{" "}
+            <Link href="/sign-in" className="text-blue-600 font-medium underline">
+              Sign in
+            </Link>
+          </p>
           <FormMessage message={searchParams} />
         </div>
       </form>
