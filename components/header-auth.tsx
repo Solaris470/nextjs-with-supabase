@@ -10,7 +10,7 @@ export default async function AuthButton() {
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
 
-  const { data: fetchUser } = await supabase.from('users').select('full_name ,role').eq('id' , user?.id).single();
+  const { data: fetchUser } = await supabase.from('users').select('full_name ,role,profile_image').eq('id' , user?.id).single();
 
   if (!hasEnvVars) {
     return (
@@ -58,10 +58,10 @@ export default async function AuthButton() {
       >
         <img
           className="w-8 h-8 rounded-full"
-          src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+          src={fetchUser?.profile_image || "https://t4.ftcdn.net/jpg/01/24/65/69/360_F_124656969_x3y8YVzvrqFZyv3YLWNo6PJaC88SYxqM.jpg"}
           alt="user photo"
         />
-        <span className="mx-2">Hey, {fetchUser?.full_name}!</span>
+        <span className="mx-2">{fetchUser?.full_name}!</span>
       </button>
       <div
         className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
@@ -74,7 +74,7 @@ export default async function AuthButton() {
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
               role="menuitem"
             >
-              Settings
+              Profile
             </a>
           </li>
           <hr />
