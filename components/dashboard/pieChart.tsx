@@ -89,16 +89,28 @@ export default function PieChart() {
   }, []);
 
   return (
-    <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">
-      {chartData ? (
-        <Chart
-          options={chartData.options}
-          series={chartData.series}
-          type="donut"
-        />
-      ) : (
-        <p>Loading Chart...</p>
-      )}
-    </div>
+    <>
+      <div className="flex justify-between p-3 align-middle">
+        <div className="">
+          <h1 className="text-xl font-semibold">ผลการดำเนินงาน</h1>
+        </div>
+        <div className="">
+          <select name="pie-filter" id="">
+            <option value="มกราคม">มกราคม</option>
+          </select>
+        </div>
+      </div>
+      <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">
+        {chartData ? (
+          <Chart
+            options={chartData.options}
+            series={chartData.series}
+            type="donut"
+          />
+        ) : (
+          <p>Loading Chart...</p>
+        )}
+      </div>
+    </>
   );
 }
