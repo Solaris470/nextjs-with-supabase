@@ -2,7 +2,7 @@ import DeployButton from "@/components/deploy-button";
 import Footer from "@/components/layout/footer";
 
 import { Kanit } from "next/font/google";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import ClientLayout from "@/components/ClientLayout";
 
 const kanit = Kanit({
@@ -40,7 +40,6 @@ export default async function RootLayout({
       </head>
       <body>
 
-        
         <ClientLayout userId={user?.id || ''}>
             {children}
           </ClientLayout>

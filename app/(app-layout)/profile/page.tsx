@@ -92,13 +92,6 @@ export default function ProfilePage() {
             </div>
         );
     }
-    if (roleLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="text-center">Loading role...</div>
-            </div>
-        );
-    }
 
     return (
         <div className="container mx-auto px-4 py-8">

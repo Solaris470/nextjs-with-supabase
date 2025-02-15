@@ -3,15 +3,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import moment from "moment";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
+import { useEffect, useState } from "react";
+import TaskEditForm from "@/components/tasks/task-edit-form";
+import TaskDetails from "@/components/tasks/task-detail";
+import { Dropdown, Modal, Button } from "flowbite-react";
+import { createClient } from "@/utils/supabase/client";
+
 
 export type Task = {
   id: string;
@@ -79,26 +77,20 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "end_date",
-    header: () => <div className="text-left">วันที่สิ้นสุดงาน</div>,
-    cell: ({ row }) => {
-      return moment(row.original.end_date).format("DD MMM YYYY");
-    },
-  },
-  {
     accessorKey: "status",
     header: "สถานะงาน",
     cell: ({ row }) => {
       return (
-        <div
-          className={`${
-            row.original.status === "Pending"
-              ? "bg-indigo-100 text-indigo-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400"
-              : row.original.status === "In Progress"
-                ? "bg-yellow-100 text-yellow-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400"
-                : "bg-green-100 text-green-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400"
-          }`}
-        >
+        <div className="flex items-center">
+          <span
+            className={`w-2.5 h-2.5 rounded-full me-2 ${
+              row.original.status === "Pending"
+                ? "bg-indigo-500"
+                : row.original.status === "In Progress"
+                ? "bg-yellow-500"
+                : "bg-green-500"
+            }`}
+          ></span>
           {row.original.status}
         </div>
       );
@@ -108,22 +100,49 @@ export const columns: ColumnDef<Task>[] = [
     header: () => <div className="text-left font-bold">Action</div>,
     id: "actions",
     cell: ({ row }) => {
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [isEditMode, setIsEditMode] = useState(false);
+      const [userId, setUserId] = useState<string | null>(null);
+      const supabase = createClient();
       const taskId = row.original.id;
+
+      useEffect(() => {
+        const fetchUser = async () => {
+          const { data, error } = await supabase.auth.getUser();
+          if (!error && data?.user) {
+            setUserId(data.user.id);
+          }
+        };
+        fetchUser();
+      }, []);
+
+      const handleViewDetails = () => {
+        setIsEditMode(false);
+        setIsModalOpen(true);
+      };
+
+      const handleEditTask = () => {
+        setIsEditMode(true);
+        setIsModalOpen(true);
+      };
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white cursor-pointer">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="hover:bg-sky-500">ดูรายละเอียดงาน</DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-sky-500">แก้ไขงาน</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <Dropdown label={<MoreHorizontal className="h-4 w-4" />} inline={true}>
+            <Dropdown.Item onClick={handleViewDetails}>View Details</Dropdown.Item>
+            <Dropdown.Item onClick={handleEditTask}>Edit Task</Dropdown.Item>
+          </Dropdown>
+          <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Modal.Header>{isEditMode ? "Edit Task" : "Task Details"}</Modal.Header>
+            <Modal.Body>
+              {isEditMode ? (
+                <TaskEditForm taskId={taskId} onClose={() => setIsModalOpen(false)} />
+              ) : (
+                <TaskDetails taskId={taskId} userId={userId} onClose={() => setIsModalOpen(false)} />
+              )}
+            </Modal.Body>
+          </Modal>
+        </>
       );
     },
   },

@@ -95,9 +95,9 @@ export default function PieChart() {
           <h1 className="text-xl font-semibold">ผลการดำเนินงาน</h1>
         </div>
         <div className="">
-          <select name="pie-filter" id="">
+          {/* <select name="pie-filter" id="">
             <option value="มกราคม">มกราคม</option>
-          </select>
+          </select> */}
         </div>
       </div>
       <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">

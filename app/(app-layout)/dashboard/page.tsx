@@ -8,6 +8,7 @@ export default function DashBoard() {
   return (
     <main>
       <h1 className="text-3xl font-bold p-2">Dashboard</h1>
+      
       <div className="flex justify-center items-center  rounded-lg gap-3 mb-3 h-72">
         <div
           style={{ width: "40%" }}
@@ -24,8 +25,8 @@ export default function DashBoard() {
           <PieChart />
         </div>
 
-        <div className="p-2 w-full flex justify-center items-center bg-white rounded-lg shadow-sm">
-          {/* <BarChart /> */}
+        <div className="w-full bg-white rounded-lg p-2 ">
+          <BarChart />
         </div>
       </div>
       <div className="p-2 w-full flex justify-center items-center bg-white rounded-lg">
