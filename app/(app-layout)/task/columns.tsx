@@ -9,7 +9,8 @@ import TaskEditForm from "@/components/tasks/task-edit-form";
 import TaskDetails from "@/components/tasks/task-detail";
 import { Dropdown, Modal, Button } from "flowbite-react";
 import { createClient } from "@/utils/supabase/client";
-
+import { useUserRole } from "@/context/userRoleContext";
+import { useRouter } from "next/router";
 
 export type Task = {
   id: string;
@@ -118,6 +119,8 @@ export const columns: ColumnDef<Task>[] = [
       const taskId = row.original.id;
       const [categories, setCategories] = useState<Category[]>([]);
       const [projects, setProjects] = useState<Project[]>([]);
+      const { role } = useUserRole();
+
       useEffect(() => {
         const fetchUser = async () => {
           const { data, error } = await supabase.auth.getUser();
@@ -138,42 +141,61 @@ export const columns: ColumnDef<Task>[] = [
           const { data: categoriesData, error: categoriesError } = await supabase
             .from("category")
             .select("id, name");
-      
+  
           const { data: projectsData, error: projectsError } = await supabase
             .from("project")
             .select("id, name");
-      
+  
           if (categoriesError || projectsError) {
             console.error("Error fetching data:", categoriesError || projectsError);
             return;
           }
-      
+  
           setCategories(categoriesData || []);
           setProjects(projectsData || []);
-      
+  
           setIsEditMode(true);
           setIsModalOpen(true);
         } catch (error) {
           console.error("Fetch Error:", error);
         }
       };
-      
+
+      const handleDeleteTask = async () => {
+        if (!window.confirm("Are you sure you want to delete this task?")) return;
+        try {
+          const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+          if (error) {
+            console.error("Error deleting task:", error);
+          } else {
+            alert("Task deleted successfully.");
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error("Delete Error:", error);
+        }
+      };
       
       return (
         <>
           <Dropdown label={<MoreHorizontal className="h-4 w-4" />} inline={true}>
             <Dropdown.Item onClick={handleViewDetails}>View Details</Dropdown.Item>
             <Dropdown.Item onClick={handleEditTask}>Edit Task</Dropdown.Item>
+            {role === "admin" && (
+              <Dropdown.Item onClick={handleDeleteTask} className="text-red-600">
+                Delete Task
+              </Dropdown.Item>
+            )}
           </Dropdown>
           <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <Modal.Header>{isEditMode ? "Edit Task" : "Task Details"}</Modal.Header>
             <Modal.Body>
               {isEditMode ? (
                 <TaskEditForm
-                categories={categories || []}
-                projects={projects || []} 
-                taskId={taskId} 
-                onClose={() => setIsModalOpen(false)} 
+                  categories={categories || []}
+                  projects={projects || []} 
+                  taskId={taskId} 
+                  onClose={() => setIsModalOpen(false)} 
                 />
               ) : (
                 <TaskDetails taskId={taskId} userId={userId} onClose={() => setIsModalOpen(false)} />

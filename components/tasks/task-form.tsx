@@ -75,7 +75,7 @@
         alert("Error saving task. Please try again.");
       } else {
         // Redirect to /to-do page on success
-        router.refresh();
+        window.location.reload();
       }
     };
 
