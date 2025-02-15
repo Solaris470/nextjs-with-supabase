@@ -47,7 +47,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
     header: (props) => {
-      return <div className="text-left font-bold">ลำดับ</div>;
+      return <div className="text-left font-bold  ">ลำดับ</div>;
     },
     cell: ({ row }) => {
       return <div className="ps-3">{row.index + 1}</div>;

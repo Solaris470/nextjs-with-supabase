@@ -136,7 +136,7 @@ export default function MyTaskList() {
                   key={todo.id}
                   className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
                 >
-                  <h5 className="mb-4 text-xl font-medium">
+                  <h5 className="mb-4 text-xl font-bold">
                     {todo.to_do_name}
                   </h5>
                   <hr />
