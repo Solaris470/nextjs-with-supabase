@@ -60,7 +60,7 @@ export default function UserManagement() {
             <Table.HeadCell>ID</Table.HeadCell>
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Created At</Table.HeadCell>
-            <Table.HeadCell>Role</Table.HeadCell>
+            <Table.HeadCell>Status</Table.HeadCell>
             <Table.HeadCell className="text-center">Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body>
