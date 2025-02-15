@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/utils/supabase/client";
+import { useSearchParams } from "next/navigation";
 
-// ทำการโหลด ApexCharts เฉพาะในฝั่ง Client เท่านั้น
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function PieChart() {
   const [chartData, setChartData] = useState<any>(null);
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get("projectId");
 
   useEffect(() => {
     const fetchTaskCounts = async () => {
@@ -30,83 +32,59 @@ export default function PieChart() {
           return;
         }
 
-        const userId = user.id; // user id ปัจจุบัน
+        const userId = user.id;
 
-        // Query เพื่อดึงจำนวนงานตามสถานะ
-        const { count: pending, error: pendingError } = await supabase
-          .from("tasks")
-          .select("*", { count: "exact" })
-          .eq("assigned_to", userId)
-          .eq("status", "Pending");
+        // 🔹 ดึงงานทั้งหมดที่ assigned ให้ user
+        let query = supabase.from("tasks").select("status").eq("assigned_to", userId);
 
-        const { count: inProgress, error: inProgressError } = await supabase
-          .from("tasks")
-          .select("*", { count: "exact" })
-          .eq("assigned_to", userId)
-          .eq("status", "In Progress");
+        // ถ้ามี projectId ให้กรองเพิ่ม
+        if (projectId && projectId !== "all") {
+          query = query.eq("project_id", projectId);
+        }
 
-        const { count: completed, error: completedError } = await supabase
-          .from("tasks")
-          .select("*", { count: "exact" })
-          .eq("assigned_to", userId)
-          .eq("status", "Completed");
+        const { data, error } = await query;
 
-        if (pendingError || inProgressError || completedError) {
-          console.error("Error fetching task counts");
+        if (error) {
+          console.error("Error fetching tasks:", error);
           return;
         }
+
+        // 🔹 นับจำนวนงานแต่ละสถานะ
+        const statusCounts = data.reduce(
+          (acc, task) => {
+            acc[task.status] = (acc[task.status] || 0) + 1;
+            return acc;
+          },
+          { Pending: 0, "In Progress": 0, Completed: 0 }
+        );
+
+        console.log(statusCounts); // ตรวจสอบค่าที่ได้
 
         setChartData({
           options: {
             chart: {
-              animation: {
-                enabled: true,
-                speed: 800,
-                animateGradually: {
-                  enabled: true,
-                  delay: 150,
-                },
-                dynamicAnimation: {
-                  enabled: true,
-                  speed: 350,
-                },
-              },
+              animation: { enabled: true, speed: 800 },
             },
-            labels: [
-              "งานที่ได้รับมอบหมาย",
-              "งานที่กำลังทำอยู่",
-              "งานที่เสร็จสิ้น",
-            ],
+            labels: ["งานที่ได้รับมอบหมาย", "งานที่กำลังทำอยู่", "งานที่เสร็จสิ้น"],
             colors: ["#8280FF", "#FEC53D", "#4AD991"],
           },
-          series: [inProgress, completed, pending],
+          series: [statusCounts.Pending, statusCounts["In Progress"], statusCounts.Completed],
         });
       } catch (e) {
         console.error("Unexpected Error:", e);
       }
     };
     fetchTaskCounts();
-  }, []);
+  }, [projectId]);
 
   return (
     <>
       <div className="flex justify-between p-3 align-middle">
-        <div className="">
-          <h1 className="text-xl font-semibold">ผลการดำเนินงาน</h1>
-        </div>
-        <div className="">
-          {/* <select name="pie-filter" id="">
-            <option value="มกราคม">มกราคม</option>
-          </select> */}
-        </div>
+        <h1 className="text-xl font-semibold">ผลการดำเนินงาน</h1>
       </div>
-      <div className="w-full max-w-xl rounded-lg bg-white p-4  dark:bg-gray-800 md:p-6">
+      <div className="w-full max-w-xl rounded-lg bg-white p-4 dark:bg-gray-800 md:p-6">
         {chartData ? (
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="donut"
-          />
+          <Chart options={chartData.options} series={chartData.series} type="donut" />
         ) : (
           <p>Loading Chart...</p>
         )}

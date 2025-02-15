@@ -1,12 +1,34 @@
+'use server'
+
 import BarChart from "@/components/dashboard/barChart";
 import PieChart from "@/components/dashboard/pieChart";
 import TaskTotal from "@/components/dashboard/taskTotal";
 import ProgresstionBar from "@/components/dashboard/progresstionBar";
+import ProjectSelector from "./ProjectSelector";
+import { createClient } from "@/utils/supabase/server";
 
-export default function DashBoard() {
+async function getProjects() {
+  const supabase = createClient();
+  
+  const { data: projects } = await supabase
+    .from('project')
+    .select('id, name')
+    .order('name');
+
+  return projects || [];
+}
+
+export default async function DashBoard() {
+  const projects = await getProjects();
+
   return (
     <main>
-      <h1 className="text-3xl font-bold p-2">Dashboard</h1>
+      <div className="flex justify-between items-center p-2">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div className="flex gap-2 items-center">
+          <ProjectSelector projects={projects} />
+        </div>
+      </div>
 
       <div className="flex justify-center items-center  rounded-lg gap-3 mb-3 h-72">
         <div

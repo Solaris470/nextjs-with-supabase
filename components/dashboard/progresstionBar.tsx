@@ -3,27 +3,49 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/utils/supabase/client";
+import { useSearchParams } from 'next/navigation';
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function PieChart() {
   const [chartData, setChartData] = useState<any>(null);
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
 
   useEffect(() => {
     async function fetchTaskProgress() {
       try {
-        // ดึงข้อมูลจากตาราง tasks (แก้ชื่อตารางให้ถูกต้อง)
-        const { count: totalTasks } = await supabase
+        // สร้าง query พื้นฐานสำหรับงานทั้งหมด
+        let totalQuery = supabase
           .from('tasks')
           .select('*', { count: 'exact', head: true });
 
-        const { count: completedTasks } = await supabase
+        // สร้าง query พื้นฐานสำหรับงานที่เสร็จแล้ว
+        let completedQuery = supabase
           .from('tasks')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'Completed');
 
-        const progressPercentage = totalTasks ? (completedTasks! / totalTasks! * 100) : 0;
+        // เพิ่ม filter ตาม projectId ถ้ามีการเลือกโปรเจค
+        if (projectId && projectId !== 'all') {
+          totalQuery = totalQuery.eq('project_id', projectId);
+          completedQuery = completedQuery.eq('project_id', projectId);
+        }
+
+        // ดึงข้อมูลพร้อมกันทั้งสอง queries
+        const [totalResult, completedResult] = await Promise.all([
+          totalQuery,
+          completedQuery
+        ]);
+
+        // ตรวจสอบ error
+        if (totalResult.error) throw totalResult.error;
+        if (completedResult.error) throw completedResult.error;
+
+        const totalTasks = totalResult.count || 0;
+        const completedTasks = completedResult.count || 0;
+        const progressPercentage = totalTasks ? (completedTasks / totalTasks * 100) : 0;
 
         setChartData({
           options: {
@@ -48,13 +70,13 @@ export default function PieChart() {
             grid: {
               show: true
             },
-            colors: ['#86efac'], // สีเขียวอ่อนตามรูป
+            colors: ['#86efac'],
             fill: {
               type: 'solid'
             },
             xaxis: {
               categories: ['Progress'],
-              max: 100 // กำหนดค่าสูงสุดเป็น 100%
+              max: 100
             },
             tooltip: {
               enabled: true,
@@ -76,10 +98,10 @@ export default function PieChart() {
     }
 
     fetchTaskProgress();
-  }, []);
+  }, [projectId]); // เพิ่ม projectId ใน dependencies
 
   return (
-    <div className="w-full rounded-lg p-4 bg-white dark:bg-gray-800 md:p-6 gap-y-5  ">
+    <div className="w-full rounded-lg p-4 bg-white dark:bg-gray-800 md:p-6 gap-y-5">
       <h3 className="text-lg font-medium text-gray-900 dark:text-white">ความคืบหน้าของงาน</h3>
       <div className="">
         {chartData && (
