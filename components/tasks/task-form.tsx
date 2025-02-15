@@ -209,7 +209,7 @@
         </div>
         
 
-        <div className={cn("grid gap-2", className)}>
+        <div className={cn("grid gap-2 mb-4", className)}>
           <div>
             <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
           </div>

@@ -1,8 +1,20 @@
 'use client';
 
+import React from "react";
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { cn } from "@/lib/utils";
+  import { addDays, format } from "date-fns"
+  import { DateRange } from "react-day-picker"
+  import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
+  import { Button } from "@/components/ui/button"
+  import { CalendarIcon } from "lucide-react";
+  import { Calendar } from "@/components/ui/calendar"
 
 interface TaskEditFormProps {
   taskId: string;
@@ -16,7 +28,10 @@ export default function TaskEditForm(
     projects,
     categories,
      onClose 
-  }: TaskEditFormProps) {
+  }: TaskEditFormProps
+  , {
+      className,
+    }: React.HTMLAttributes<HTMLDivElement>) {
   const [task, setTask] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [taskName, setTaskName] = useState('');
@@ -29,6 +44,10 @@ export default function TaskEditForm(
   const [endDate, setEndDate] = useState<Date | null>(null);
   const supabase = createClient();
   const router = useRouter();
+  const [date, setDate] = React.useState<DateRange | undefined>({
+          from: new Date(),
+          to: new Date(addDays(new Date(), 1)),
+        });
 
   useEffect(() => {
     async function fetchTask() {
@@ -58,6 +77,13 @@ export default function TaskEditForm(
     fetchTask();
   }, [taskId]);
 
+  const setToMidnight = (date: Date | undefined) => {
+    if (!date) return date;
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    return newDate;
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -69,8 +95,8 @@ export default function TaskEditForm(
         status: status,
         priority: priority,
         category_id: category,
-        start_date: startDate,
-        end_date: endDate,
+        start_date: setToMidnight(date?.from),
+        end_date: setToMidnight(addDays(date?.to, 1)), // เพิ่ม 1 วันให้กับวันที่สิ้นสุด
         project_id: project,
       })
       .eq('id', taskId);
@@ -199,7 +225,49 @@ export default function TaskEditForm(
           </select>
         </div>
 
-      <div className="mb-4">
+        <div className={cn("grid gap-2 mb-4", className)}>
+          <div>
+            <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={cn(
+                  "w-[300px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+              <CalendarIcon />
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Pick a date</span>
+              )}
+            </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+      {/* <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="start_date">
           วันที่เริ่มต้น :
         </label>
@@ -225,7 +293,7 @@ export default function TaskEditForm(
           onChange={(e) => setEndDate(new Date(e.target.value))}
           required
         />
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-center">
         <button
