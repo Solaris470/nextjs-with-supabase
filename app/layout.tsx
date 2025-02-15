@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/server';
 import ClientLayout from "@/components/ClientLayout";
 
 const kanit = Kanit({
-  weight: "400",
+  weight: "300",
   subsets: ["latin"],
   display: "swap",
 })

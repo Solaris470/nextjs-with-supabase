@@ -47,7 +47,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
     header: (props) => {
-      return <div className="">ลำดับ</div>;
+      return <div className="text-left font-bold">ลำดับ</div>;
     },
     cell: ({ row }) => {
       return <div className="ps-3">{row.index + 1}</div>;
@@ -55,12 +55,12 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "to_do_name",
-    header: "ชื่องาน",
+    header: () => <div className="text-left font-bold">ชื่องาน</div>,
   },
   {
     id: "assigned_by",
     accessorKey: "assigned_by",
-    header: "ผู้มอบหมายงาน",
+    header: () => <div className="text-left font-bold">ผู้มอบหมายงาน</div>,
     filterFn: (row, id, filterValue: AssignedBy) => {
       const rowValue = row.getValue(id) as AssignedBy;
       return rowValue?.full_name === filterValue?.full_name;
@@ -71,7 +71,7 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "assigned_to",
-    header: "ผู้รับผิดชอบ",
+    header: () => <div className="text-left font-bold">ผู้รับผิดชอบ</div>,
     filterFn: (row, id, filterValue: AssignedTo) => {
       const rowValue = row.getValue(id) as AssignedTo;
       return rowValue?.full_name === filterValue?.full_name;
@@ -89,7 +89,7 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "status",
-    header: "สถานะงาน",
+    header: () => <div className="text-left font-bold">สถานะงาน</div>,
     cell: ({ row }) => {
       return (
         <div className="flex items-center">

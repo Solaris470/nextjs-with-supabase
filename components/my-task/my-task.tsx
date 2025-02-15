@@ -144,7 +144,7 @@ export default function MyTaskList() {
                     {todo.description && (
                       <div>
                         <h5 className="font-bold text-black">รายละเอียดงาน</h5>
-                        <li>{todo.description}</li>
+                        <p>{todo.description}</p>
                       </div>
                     )}
                     <div className="flex justify-between items-center">
