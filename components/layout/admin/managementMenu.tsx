@@ -14,7 +14,7 @@ if (role !== "admin") return null;
       <h1 className="font-bold text-lg">Management</h1>
       <li>
         <Link
-          href="/category"
+          href="/admin/category-management"
           className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
         >
           <svg
@@ -39,7 +39,7 @@ if (role !== "admin") return null;
       </li>
       <li>
         <Link
-          href="/project-setting"
+          href="/admin/project-management"
           className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
         >
           <svg
@@ -71,7 +71,7 @@ if (role !== "admin") return null;
       </li>
       <li>
         <Link
-          href="/user-management"
+          href="/admin/user-management"
           className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
         >
           <svg
