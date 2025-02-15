@@ -48,6 +48,10 @@ export default async function ToDo() {
     .from("category")
     .select("id, name");
 
+  const { data: projects } = await supabase
+    .from("project")
+    .select("id, name");
+
   return (
     <>
       <div className="container mx-auto h-screen">
@@ -108,6 +112,7 @@ export default async function ToDo() {
             <div className="p-4 md:p-7">
               <ToDoFormClient
                 categories={categories || []}
+                projects={projects || []}
                 userId={user?.id || ""}
               />
             </div>

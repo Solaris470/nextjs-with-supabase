@@ -6,10 +6,17 @@ import { useRouter } from 'next/navigation';
 
 interface TaskEditFormProps {
   taskId: string;
+  categories: any;
+  projects: any;
   onClose: () => void;
 }
 
-export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
+export default function TaskEditForm(
+  { taskId,
+    projects,
+    categories,
+     onClose 
+  }: TaskEditFormProps) {
   const [task, setTask] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [taskName, setTaskName] = useState('');
@@ -17,6 +24,7 @@ export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [category, setCategory] = useState('');
+  const [project, setProject] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const supabase = createClient();
@@ -35,6 +43,7 @@ export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
         return;
       }
 
+      setProject(data.project_id);
       setTask(data);
       setTaskName(data.to_do_name);
       setDescription(data.description);
@@ -62,6 +71,7 @@ export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
         category_id: category,
         start_date: startDate,
         end_date: endDate,
+        project_id: project,
       })
       .eq('id', taskId);
 
@@ -80,6 +90,29 @@ export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="project"
+          >
+            เลือกโปรเจกต์ :
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="project"
+            value={project}
+            onChange={(e) => setProject(e.target.value)}
+            required
+          >
+            <option value="">Select project</option>
+            {projects.map((project: any) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="task_name">
           ชื่องาน :
@@ -144,19 +177,27 @@ export default function TaskEditForm({ taskId, onClose }: TaskEditFormProps) {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
-          ประเภทงาน :
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="category"
-          type="text"
-          placeholder="Enter category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
-      </div>
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="category"
+          >
+            ประเภทงาน :
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">Select category</option>
+            {categories.map((category: any) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="start_date">

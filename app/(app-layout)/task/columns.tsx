@@ -32,6 +32,17 @@ interface AssignedTo {
   full_name: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+}
+
+
 export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
@@ -105,7 +116,8 @@ export const columns: ColumnDef<Task>[] = [
       const [userId, setUserId] = useState<string | null>(null);
       const supabase = createClient();
       const taskId = row.original.id;
-
+      const [categories, setCategories] = useState<Category[]>([]);
+      const [projects, setProjects] = useState<Project[]>([]);
       useEffect(() => {
         const fetchUser = async () => {
           const { data, error } = await supabase.auth.getUser();
@@ -121,11 +133,32 @@ export const columns: ColumnDef<Task>[] = [
         setIsModalOpen(true);
       };
 
-      const handleEditTask = () => {
-        setIsEditMode(true);
-        setIsModalOpen(true);
+      const handleEditTask = async () => {
+        try {
+          const { data: categoriesData, error: categoriesError } = await supabase
+            .from("category")
+            .select("id, name");
+      
+          const { data: projectsData, error: projectsError } = await supabase
+            .from("project")
+            .select("id, name");
+      
+          if (categoriesError || projectsError) {
+            console.error("Error fetching data:", categoriesError || projectsError);
+            return;
+          }
+      
+          setCategories(categoriesData || []);
+          setProjects(projectsData || []);
+      
+          setIsEditMode(true);
+          setIsModalOpen(true);
+        } catch (error) {
+          console.error("Fetch Error:", error);
+        }
       };
-
+      
+      
       return (
         <>
           <Dropdown label={<MoreHorizontal className="h-4 w-4" />} inline={true}>
@@ -136,7 +169,12 @@ export const columns: ColumnDef<Task>[] = [
             <Modal.Header>{isEditMode ? "Edit Task" : "Task Details"}</Modal.Header>
             <Modal.Body>
               {isEditMode ? (
-                <TaskEditForm taskId={taskId} onClose={() => setIsModalOpen(false)} />
+                <TaskEditForm
+                categories={categories || []}
+                projects={projects || []} 
+                taskId={taskId} 
+                onClose={() => setIsModalOpen(false)} 
+                />
               ) : (
                 <TaskDetails taskId={taskId} userId={userId} onClose={() => setIsModalOpen(false)} />
               )}
