@@ -209,17 +209,18 @@
         </div>
         
 
-        <div className={cn("grid gap-2 mb-4", className)}>
+        <div className={cn("grid gap-2 mb-4 text-gray-700", className)}>
           <div>
-            <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 id="date"
                 variant={"outline"}
+                // style={{ border: "0 solid #6b7280" }}
                 className={cn(
-                  "w-[300px] justify-start text-left font-normal",
+                  "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
                   !date && "text-muted-foreground"
                 )}
               >

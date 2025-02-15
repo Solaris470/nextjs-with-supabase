@@ -225,9 +225,9 @@ export default function TaskEditForm(
           </select>
         </div>
 
-        <div className={cn("grid gap-2 mb-4", className)}>
+        <div className={cn("grid gap-2 mb-4 text-gray-700", className)}>
           <div>
-            <label htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
+            <label className="text-sm font-bold" htmlFor="">วันที่เริ่มต้น - วันที่สิ้นสุด :</label>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -235,7 +235,7 @@ export default function TaskEditForm(
                 id="date"
                 variant={"outline"}
                 className={cn(
-                  "w-[300px] justify-start text-left font-normal",
+                  "w-[300px] justify-start text-left text-sm font-bold w-full",
                   !date && "text-muted-foreground"
                 )}
               >
