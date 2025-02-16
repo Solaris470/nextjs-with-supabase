@@ -14,6 +14,8 @@ export default async function ToDoFormContactPage() {
     // Fetch users
     const { data: users } = await supabase.from("users").select("id, full_name");
 
+    const { data: projects } = await supabase.from("project").select("id, name");
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full">
@@ -23,6 +25,7 @@ export default async function ToDoFormContactPage() {
         <ToDoFormContactClient
       users={users || []}
       categories={categories || []}
+      projects={projects || []}
       userId={user?.id || ""}
     />
       </div>

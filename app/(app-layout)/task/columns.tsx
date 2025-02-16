@@ -180,7 +180,9 @@ export const columns: ColumnDef<Task>[] = [
         <>
           <Dropdown label={<MoreHorizontal className="h-4 w-4" />} inline={true}>
             <Dropdown.Item onClick={handleViewDetails}>View Details</Dropdown.Item>
-            <Dropdown.Item onClick={handleEditTask}>Edit Task</Dropdown.Item>
+            {role != "employee" && (
+              <Dropdown.Item onClick={handleEditTask}>Edit Task</Dropdown.Item>
+            )}
             {role === "admin" && (
               <Dropdown.Item onClick={handleDeleteTask} className="text-red-600">
                 Delete Task

@@ -25,10 +25,12 @@ export default function ToDoFormContactClient({
   users,
   categories,
   userId,
+  projects,
 }: {
   users: any;
   categories: Category[];
   userId: string;
+  projects: any;
 },
 {
   className,
@@ -41,6 +43,7 @@ export default function ToDoFormContactClient({
   const [dueDate, setDueDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [category, setCategory] = useState("");
+  const [project, setProject] = useState<string>("");
   const [assignedByUser, setAssignedByUser] = useState<any>(null);
   const [assignedToUser, setAssignedToUser] = useState<any>(null);
 
@@ -74,27 +77,36 @@ export default function ToDoFormContactClient({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await supabase.from("tasks").insert([
-      {
-        to_do_name: taskName,
-        description: description,
-        status: status,
-        priority: priority,
-        start_date: date?.from,
-        end_date: date?.to,
-        assigned_by: userId,
-        assigned_to: cardId || null, // ป้องกันปัญหา `null` type error
-        category_id: category,
-      },
-    ]);
-
+  
+    if (!taskName || !category || !project) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+  
+    const taskData = {
+      to_do_name: taskName,
+      description: description || null,
+      status: status,
+      priority: priority,
+      start_date: date?.from ? date.from.toISOString() : null,
+      end_date: date?.to ? date.to.toISOString() : null,
+      assigned_by: userId,
+      assigned_to: cardId || null,
+      category_id: category,
+      project_id: project,
+    };
+  
+    const { data, error } = await supabase.from("tasks").insert([taskData]).select();
+  
     if (error) {
       console.error("Error saving task:", error.message);
-      alert("Error saving task. Please try again.");
+      alert("เกิดข้อผิดพลาดในการบันทึกงาน: " + error.message);
     } else {
+      console.log("Task saved successfully:", data);
       router.push("/task");
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="p-6"> 
@@ -113,6 +125,29 @@ export default function ToDoFormContactClient({
           </div>
         )}
       </div>
+
+      <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="project"
+          >
+            เลือกโปรเจกต์ :
+          </label>
+          <select
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="project"
+            value={project}
+            onChange={(e) => setProject(e.target.value)}
+            required
+          >
+            <option value="">Select project</option>
+            {projects.map((project: any) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
       {/* Form Fields */}
       <div className="mb-4">
