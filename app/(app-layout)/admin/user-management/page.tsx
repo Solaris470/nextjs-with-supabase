@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Button, Table } from "flowbite-react";
 import { Modal } from "flowbite-react";
 
-type Category = {
+type User = {
   id: number;
   full_name: string;
   created_at: string;
@@ -14,46 +14,76 @@ type Category = {
 
 export default function UserManagement() {
   const supabase = createClient();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [editUserName, setEditUserName] = useState("");
+  const [editRole, setEditRole] = useState("");
+  const [status, setStatus] = useState("active");
+  const [editUserId, setEditUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCategories();
+    fetchUsers();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchUsers = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("users")
-      .select("id, full_name, created_at, role");
+      .select("id, full_name, created_at, role")
+      .order("id", {ascending: true});
     if (error) console.error("Fetch Error:", error);
-    else setCategories(data || []);
+    else setUsers(data || []);
     setLoading(false);
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
-    const { error } = await supabase.from("category").delete().eq("id", id);
+    const { error } = await supabase.from("users").delete().eq("id", id);
     if (error) console.error("Delete Error:", error);
-    else fetchCategories();
+    else fetchUsers();
   };
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewMoreModalOpen, setIsViewMoreModalOpen] = useState(false);
 
   const handleEdit = (id: any) => {
-    setIsEditModalOpen(true);
+    const user = users.find(user => user.id === id);
+    if (user) {
+      setEditUserName(user.full_name);
+      setEditUserId(user.id);
+      setIsEditModalOpen(true);
+    }
   };
 
   const handleViewMore = (id: any) => {
     setIsViewMoreModalOpen(true);
   };
 
+  const handleSaveEdit = async () => {
+    if (editUserId === null) return;
+  
+    const { error } = await supabase
+      .from("users")
+      .update({ 
+        full_name: editUserName, 
+        role: editRole,
+        status: status
+      })
+      .eq("id", editUserId);
+
+    if (error) {
+      console.error("Update Error:", error);
+    } else {
+      fetchUsers();
+      setIsEditModalOpen(false);
+    }
+  };
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Category Management</h1>
+      <h1 className="text-2xl font-bold mb-4">User Management</h1>
       {loading ? (
-        <p>Loading categories...</p>
+        <p>Loading User...</p>
       ) : (
         <Table hoverable className="bg-white dark:bg-gray-800 rounded-lg">
           <Table.Head>
@@ -64,18 +94,18 @@ export default function UserManagement() {
             <Table.HeadCell className="text-center">Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body>
-            {categories.map((category) => (
-              <Table.Row key={category.id}>
-                <Table.Cell>{category.id}</Table.Cell>
-                <Table.Cell>{category.full_name}</Table.Cell>
+            {users.map((user) => (
+              <Table.Row key={user.id}>
+                <Table.Cell>{user.id}</Table.Cell>
+                <Table.Cell>{user.full_name}</Table.Cell>
                 <Table.Cell>
-                  {new Date(category.created_at).toLocaleString()}
+                  {new Date(user.created_at).toLocaleString()}
                 </Table.Cell>
-                <Table.Cell>{category.role}</Table.Cell>
+                <Table.Cell>{user.role}</Table.Cell>
                 <Table.Cell className="flex justify-center gap-2">
                   <Button
                     id="edit"
-                    onClick={() => handleEdit(category.id)}
+                    onClick={() => handleEdit(user.id)}
                   >
                     <svg
                       className="w-6 h-6 text-yellow-400 dark:text-white"
@@ -97,7 +127,7 @@ export default function UserManagement() {
                   </Button>
                   <Button
                   id="delete"
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleDelete(user.id)}
                   >
                     <svg
                       className="w-6 h-6 text-red-600 dark:text-white"
@@ -120,7 +150,7 @@ export default function UserManagement() {
                   <Button
                   id="view"
                     color="info"
-                    onClick={() => handleViewMore(category.id)}
+                    onClick={() => handleViewMore(user.id)}
                   >
                     <svg
                       className="w-6 h-6 text-blue-400 dark:text-white"
@@ -151,22 +181,48 @@ export default function UserManagement() {
       )}
       {/* Edit Modal */}
       <Modal show={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
-        <Modal.Header>Edit Category</Modal.Header>
+        <Modal.Header>Edit User</Modal.Header>
         <Modal.Body>
           <div className="space-y-4">
-            <label htmlFor="categoryName">Category Name</label>
+            <label htmlFor="userName">User Name</label>
             <input
               type="text"
-              id="categoryName"
+              id="userName"
+              value={editUserName}
+              onChange={(e) => setEditUserName(e.target.value)}
               className="w-full p-2 border rounded"
             />
+          </div>
+          <div>
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={editRole}
+              onChange={(e) => setEditRole(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="employee">Employee</option>
+              <option value="supervisor">Supervisor</option>
+            </select>
+          </div>
+          <div className="block text-gray-700 text-sm font-bold space-y-4 mb-2">
+            <label htmlFor="status">สถานะของโปรเจ็กต์ :</label>
+            <select
+              id="status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button color="gray" onClick={() => setIsEditModalOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setIsEditModalOpen(false)}>Save</Button>
+          <Button color="success" onClick={() => handleSaveEdit()}>Save</Button>
         </Modal.Footer>
       </Modal>
 
@@ -177,7 +233,7 @@ export default function UserManagement() {
       >
         <Modal.Header>View More</Modal.Header>
         <Modal.Body>
-          <p>Here is more information about this category...</p>
+          <p>Here is more information about this user...</p>
         </Modal.Body>
         <Modal.Footer>
           <Button color="gray" onClick={() => setIsViewMoreModalOpen(false)}>

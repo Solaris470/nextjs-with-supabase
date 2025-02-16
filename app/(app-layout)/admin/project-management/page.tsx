@@ -37,7 +37,7 @@ export default function ProjectManagement() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
-    const { error } = await supabase.from("category").delete().eq("id", id);
+    const { error } = await supabase.from("project").delete().eq("id", id);
     if (error) console.error("Delete Error:", error);
     else fetchProjects();
   };
