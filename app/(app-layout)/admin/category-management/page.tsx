@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button, Table } from "flowbite-react";
 import { Modal } from "flowbite-react";
+import { data } from "autoprefixer";
+import { Coming_Soon } from "next/font/google";
 
 type Category = {
   id: number;
@@ -15,6 +17,9 @@ type Category = {
 export default function CategoryManagement() {
   const supabase = createClient();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [editCategoryName, setEditCategoryName] = useState("");
+  const [status, setStatus] = useState("active");
+  const [editCategoryId, setEditCategoryId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,11 +30,14 @@ export default function CategoryManagement() {
     setLoading(true);
     const { data, error } = await supabase
       .from("category")
-      .select("id, name, created_at, status");
+      .select("id, name, created_at, status")
+      .order("id", { ascending: true });
     if (error) console.error("Fetch Error:", error);
     else setCategories(data || []);
     setLoading(false);
   };
+  
+  console.log(categories);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
@@ -42,11 +50,35 @@ export default function CategoryManagement() {
   const [isViewMoreModalOpen, setIsViewMoreModalOpen] = useState(false);
 
   const handleEdit = (id: any) => {
-    setIsEditModalOpen(true);
+    const category = categories.find(cat => cat.id === id);
+    if (category) {
+      setEditCategoryName(category.name);
+      setEditCategoryId(category.id);
+      setIsEditModalOpen(true);
+    }
   };
 
   const handleViewMore = (id: any) => {
     setIsViewMoreModalOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editCategoryId === null) return;
+  
+    const { error } = await supabase
+      .from("category")
+      .update({ 
+        name: editCategoryName, 
+        status: status
+       })
+      .eq("id", editCategoryId);
+  
+    if (error) {
+      console.error("Update Error:", error);
+    } else {
+      fetchCategories();
+      setIsEditModalOpen(false);
+    }
   };
 
   return (
@@ -153,20 +185,39 @@ export default function CategoryManagement() {
       <Modal show={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <Modal.Header>Edit Category</Modal.Header>
         <Modal.Body>
-          <div className="space-y-4">
-            <label htmlFor="categoryName">Category Name</label>
+          <div className="block text-gray-700 text-sm font-bold space-y-4 mb-2">
+            <label htmlFor="categoryName">ชื่อประเภท :</label>
             <input
               type="text"
               id="categoryName"
+              value={editCategoryName}
+              onChange={(e) => setEditCategoryName(e.target.value)}
               className="w-full p-2 border rounded"
+              required
             />
+          </div>
+          <div className="text-gray-700 text-sm font-bold mb-2">
+            <label className="block mb-2" htmlFor="status">
+              สถานะของประเภท :
+            </label>
+            <select
+              id="status"
+              className="w-full p-2 border rounded-md"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button color="gray" onClick={() => setIsEditModalOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setIsEditModalOpen(false)}>Save</Button>
+          <Button color="success" onClick={() => handleSaveEdit()}>
+            Save
+          </Button>
         </Modal.Footer>
       </Modal>
 
