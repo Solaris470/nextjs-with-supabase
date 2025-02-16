@@ -37,7 +37,6 @@
     const [priority, setPriority] = useState("Low");
     const [category, setCategory] = useState("");
     const [project, setProject] = useState<string>("");
-    const router = useRouter();
     const supabase = createClient();
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: new Date(),

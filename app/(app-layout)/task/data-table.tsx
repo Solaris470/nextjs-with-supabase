@@ -54,15 +54,25 @@ interface AssignedTo {
   full_name: string;
 }
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface Task {
+  id: string;
+  to_do_name: string;
+  status: string;
+  assigned_by: AssignedBy;
+  assigned_to?: AssignedTo; // อาจเป็น undefined ได้
+  start_date?: string;
+  end_date?: string;
 }
 
-export function DataTable<TData, TValue>({
+interface DataTableProps {
+  columns: ColumnDef<Task, any>[];
+  data: Task[];
+}
+
+export function DataTable({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );

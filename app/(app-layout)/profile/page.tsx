@@ -6,6 +6,15 @@ import { createClient } from "@/utils/supabase/client";
 import { v4 as uuidv4 } from "uuid";
 import { useUserRole } from "@/context/userRoleContext";
 
+type User = {
+  id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  profile_image: string;
+  phone_number?: string;
+};
+
 export default function ProfilePage() {
   const supabase = createClient();
   const { role, loading: roleLoading } = useUserRole();
