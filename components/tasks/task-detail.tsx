@@ -15,6 +15,7 @@ interface TaskDetailsProps {
 export default function TaskDetails({ taskId, userId, onClose }: TaskDetailsProps) {
   const [task, setTask] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const {role } = useUserRole();
   const supabase = createClient();
   const router = useRouter();
 
@@ -67,28 +68,28 @@ export default function TaskDetails({ taskId, userId, onClose }: TaskDetailsProp
       <p><strong>คำอธิบาย:</strong> {task.description}</p>
       <div className="flex items-center">
       <strong>สถานะของงาน: </strong>
-          <span
-            className={`w-2.5 h-2.5 rounded-full me-2 ${
-              task.status === "Pending"
-                ? "bg-indigo-500"
-                : task.status === "In Progress"
-                ? "bg-yellow-500"
-                : "bg-green-500"
-            }`}
-          ></span>
-        {task.status}
-        </div>
+        <span
+        className={`w-2.5 h-2.5 rounded-full me-2 ${
+          task.status === "Pending"
+          ? "bg-indigo-500"
+          : task.status === "In Progress"
+          ? "bg-yellow-500"
+          : "bg-green-500"
+        }`}
+        ></span>
+      {task.status}
+      </div>
       <p><strong>ความสำคัญ:</strong> {task.priority}</p>
       <p><strong>ประเภทงาน:</strong> {task.category_id}</p>
       <p><strong>วันที่เริ่มงาน:</strong> {moment(task.start_date).format("DD MMM YYYY")}</p>
       <p><strong>วันที่สิ้นสุดงาน:</strong> {moment(task.end_date).format("DD MMM YYYY")}</p>
 
-    {task.assigned_to === null && (
+    {task.assigned_to === null && role !== 'admin' && (
       <button
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleAcceptTask}
+      className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      onClick={handleAcceptTask}
       >
-        รับงาน
+      รับงาน
       </button>
     )}
     </div>
