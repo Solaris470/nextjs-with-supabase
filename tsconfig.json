@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmitOnError": false,
     "skipLibCheck": true,  
     "noEmit": false,       
     "allowJs": true,       
