@@ -53,12 +53,12 @@ export const signUpAction = async (formData: FormData) => {
     }
   }
 
-  // Step 5: Return success message
-  return {
-    success: true,
-    message:
-      "Thanks for signing up! Please check your email for a verification link.",
-  };
+  // Step 5: Redirect to sign-in page with success message
+  return encodedRedirect(
+    "success",
+    "/sign-in",
+    "สมัครสมาชิกเสร็จสิ้น โปรดยืนยันอีเมล"
+  );
 };
 
 
@@ -77,10 +77,8 @@ export const signInAction = async (formData: FormData) => {
     
   }
 
-  // const role = await fetchUserRole(user.id);
-
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return encodedRedirect("error", "/sign-in", "อีเมลหรือรหัสผ่านผิด");
   }
 
   return redirect("/task");

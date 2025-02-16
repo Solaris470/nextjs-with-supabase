@@ -40,7 +40,9 @@ export default function Login({ searchParams }: { searchParams: Message }) {
                 Create Account
               </Link>
             </p>
+            <div className="text-red-500 text-sm text-center">
             <FormMessage message={searchParams} />
+            </div>
           </div>
         </form>
     </>
