@@ -183,8 +183,8 @@ export default function UserManagement() {
       <Modal show={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <Modal.Header>Edit User</Modal.Header>
         <Modal.Body>
-          <div className="space-y-4">
-            <label htmlFor="userName">User Name</label>
+          <div className="block text-gray-700 text-sm font-bold space-y-4 mb-2">
+            <label htmlFor="userName">ชื่อผู้ใช้ :</label>
             <input
               type="text"
               id="userName"
@@ -193,8 +193,8 @@ export default function UserManagement() {
               className="w-full p-2 border rounded"
             />
           </div>
-          <div>
-            <label htmlFor="role">Role</label>
+          <div className="text-gray-700 text-sm font-bold space-y-4 mb-2">
+            <label htmlFor="role">ตำแหน่ง :</label>
             <select
               id="role"
               value={editRole}
@@ -206,7 +206,7 @@ export default function UserManagement() {
             </select>
           </div>
           <div className="block text-gray-700 text-sm font-bold space-y-4 mb-2">
-            <label htmlFor="status">สถานะของโปรเจ็กต์ :</label>
+            <label htmlFor="status">สถานะของผู้ใช้ :</label>
             <select
               id="status"
               value={status}
