@@ -52,20 +52,27 @@ export default async function ToDo() {
     .from("project")
     .select("id, name");
 
+    const { data: userRole } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user?.id);
+
   return (
     <>
       <div className="container mx-auto h-screen">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold py-5">รายการงานทั้งหมด</h1>
           {/* <!-- Modal toggle --> */}
-          <button
-            data-modal-target="crud-modal"
-            data-modal-toggle="crud-modal"
-            className="bg-blue-700 text-white px-3 py-2 rounded-lg font-light"
-            type="button"
-          >
-            เพิ่มงานใหม่
-          </button>
+          {userRole?.[0]?.role === 'supervisor' && (
+              <button
+                data-modal-target="crud-modal"
+                data-modal-toggle="crud-modal"
+                className="bg-blue-700 text-white px-3 py-2 rounded-lg font-light"
+                type="button"
+              >
+                เพิ่มงานใหม่
+              </button>
+              )}
         </div>
         <DataTable columns={columns} data={data} />
       </div>
