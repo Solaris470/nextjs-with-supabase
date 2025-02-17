@@ -23,15 +23,25 @@ export default function TaskDetails({ taskId, userId, onClose }: TaskDetailsProp
     async function fetchTask() {
       const { data, error } = await supabase
         .from('tasks')
-        .select('*')
+        .select(`
+          id, 
+          to_do_name, 
+          description, 
+          status, 
+          priority, 
+          start_date, 
+          end_date, 
+          assigned_to,
+          category: category_id (name) 
+        `)
         .eq('id', taskId)
         .single();
-
+  
       if (error) {
         console.error('Error fetching task:', error.message);
         return;
       }
-
+  
       setTask(data);
       setLoading(false);
     }
@@ -80,7 +90,7 @@ export default function TaskDetails({ taskId, userId, onClose }: TaskDetailsProp
       {task.status}
       </div>
       <p><strong>ความสำคัญ:</strong> {task.priority}</p>
-      <p><strong>ประเภทงาน:</strong> {task.category_id}</p>
+      <p><strong>ประเภทงาน:</strong> {task.category?.name}</p>
       <p><strong>วันที่เริ่มงาน:</strong> {moment(task.start_date).format("DD MMM YYYY")}</p>
       <p><strong>วันที่สิ้นสุดงาน:</strong> {moment(task.end_date).format("DD MMM YYYY")}</p>
 

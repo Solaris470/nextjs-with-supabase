@@ -200,7 +200,7 @@ export const columns: ColumnDef<Task>[] = [
                   onClose={() => setIsModalOpen(false)} 
                 />
               ) : (
-                <TaskDetails taskId={taskId} userId={userId || ''} onClose={() => setIsModalOpen(false)} />
+                <TaskDetails taskId={taskId}   categories={categories || []} userId={userId || ''} onClose={() => setIsModalOpen(false)} />
               )}
             </Modal.Body>
           </Modal>
