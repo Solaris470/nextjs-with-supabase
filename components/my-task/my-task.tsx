@@ -46,7 +46,8 @@ export default function MyTaskList() {
           start_date, end_date, completed_date`
         )
         .eq("assigned_to", userId)
-        .order("status", { ascending: true });
+        .order("status", { ascending: true })
+        .order("id", { ascending: true });
 
       // 🔹 ถ้ามี projectId ให้กรอง
       if (projectId && projectId !== "all") {
