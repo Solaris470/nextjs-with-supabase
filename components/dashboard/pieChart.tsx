@@ -35,7 +35,7 @@ export default function PieChart() {
         const userId = user.id;
 
         // 🔹 ดึงงานทั้งหมดที่ assigned ให้ user
-        let query = supabase.from("tasks").select("status").eq("assigned_to", userId);
+        let query = supabase.from("tasks").select("status");
 
         // ถ้ามี projectId ให้กรองเพิ่ม
         if (projectId && projectId !== "all") {
@@ -57,8 +57,6 @@ export default function PieChart() {
           },
           { Pending: 0, "In Progress": 0, Completed: 0 }
         );
-
-        console.log(statusCounts); // ตรวจสอบค่าที่ได้
 
         setChartData({
           options: {

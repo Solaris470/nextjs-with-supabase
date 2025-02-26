@@ -13,8 +13,6 @@ export default function BarChart() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
 
-
-
   useEffect(() => {
     async function fetchCategoryData() {
         // ดึง user ที่ล็อกอินอยู่
@@ -32,7 +30,6 @@ export default function BarChart() {
             category ( name )
           `
           )
-          .eq("assigned_to", user?.id)
           .not("category_id", "is", null);
 
         // ถ้ามีการเลือกโปรเจค ให้เพิ่มเงื่อนไขในการ filter

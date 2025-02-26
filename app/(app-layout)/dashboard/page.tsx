@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import BarChart from "@/components/dashboard/barChart";
 import PieChart from "@/components/dashboard/pieChart";
@@ -9,11 +9,11 @@ import { createClient } from "@/utils/supabase/server";
 
 async function getProjects() {
   const supabase = createClient();
-  
+
   const { data: projects } = await supabase
-    .from('project')
-    .select('id, name')
-    .order('name');
+    .from("project")
+    .select("id, name")
+    .order("name");
 
   return projects || [];
 }
@@ -30,15 +30,18 @@ export default async function DashBoard() {
         </div>
       </div>
 
-      <div className="flex justify-center items-center  rounded-lg gap-3 mb-3 h-72">
-        <div
-          style={{ width: "40%" }}
-          className="bg-white p-2 rounded-lg h-full shadow-sm"
-        >
-          <TaskTotal />
-        </div>
-        <div className="bg-white w-full p-2 rounded-lg h-full shadow-sm">
-          <ProgresstionBar />
+      <div className="bg-white p-2 rounded-lg mb-3 h-72">
+        <h1 className="text-2xl p-3 font-semibold">Project</h1>
+        <div className="flex justify-center items-center gap-3">
+          <div
+            style={{ width: "40%" }}
+            className="bg-white p-2 rounded-lg hover:shadow-sm"
+          >
+            <TaskTotal />
+          </div>
+          <div className="bg-white w-full p-2 rounded-lg hover:shadow-sm">
+            <ProgresstionBar />
+          </div>
         </div>
       </div>
       <div className="flex justify-between gap-3 mb-3 ">

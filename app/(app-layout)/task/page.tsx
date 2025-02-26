@@ -46,11 +46,11 @@ export default async function ToDo() {
   // Fetch categories
   const { data: categories } = await supabase
     .from("category")
-    .select("id, name");
+    .select("id, name").eq("status", "active").order("id", { ascending: true });
 
   const { data: projects } = await supabase
     .from("project")
-    .select("id, name");
+    .select("id, name").eq("status", "active").order("id", { ascending: true });
 
     const { data: userRole } = await supabase
     .from("users")
